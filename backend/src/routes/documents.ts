@@ -210,6 +210,9 @@ router.post('/', upload.single('file'), async (req, res) => {
       }
     });
 
+    // Invalidate stats cache
+    statsCache = { data: null, lastFetched: 0 };
+
     res.status(201).json(document);
   } catch (error) {
     console.error('Upload error:', error);
@@ -297,6 +300,9 @@ router.delete('/:id', async (req, res) => {
       where: { id }
     });
 
+    // Invalidate stats cache
+    statsCache = { data: null, lastFetched: 0 };
+
     res.json({ message: 'Document deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete document' });
@@ -325,6 +331,9 @@ router.put('/:id', async (req, res) => {
         department
       }
     });
+
+    // Invalidate stats cache
+    statsCache = { data: null, lastFetched: 0 };
 
     res.json(updatedDocument);
   } catch (error) {
