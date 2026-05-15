@@ -1,76 +1,75 @@
 :root {
-  --page-bg:            #F4F7FB;
-  --sidebar-bg:         #0d0d0d;
-  --header-bg:          #0d0d0d;
+  --page-bg:            #F0F3F6;
+  --sidebar-bg:         #212A34;
+  --header-bg:          #212A34;
   
-  --sidebar-active-bg:  #161616;
-  --sidebar-active-border: #5DCAA5;
-  --sidebar-text:       #888888;
+  --sidebar-active-bg:  rgba(255, 255, 255, 0.05);
+  --sidebar-active-border: #88C057;
+  --sidebar-text:       #8a959e;
   --sidebar-active-text:#ffffff;
-  --sidebar-label:      #555555;
+  --sidebar-label:      #8a959e;
 
   --header-text:        #ffffff;
-  --header-border:      #333333;
+  --header-border:      #2A3644;
 
   --card-bg-white:      #ffffff;
-  --card-bg-blue:       #ffffff;
-  --card-bg-mint:       #ffffff;
   --card-border:        #e2e8f0;
 
-  --text-primary:       #111827;
-  --text-secondary:     #4b5563;
-  --text-muted:         #9ca3af;
+  --text-primary:       #333333;
+  --text-secondary:     #666666;
+  --text-muted:         #999999;
 
-  --label-blue:         #4b5563;
-  --label-mint:         #5DCAA5;
-  --number-blue:        #111827;
-  --number-mint:        #111827;
-  --trend-blue:         #5DCAA5;
-  --trend-mint:         #5DCAA5;
-  --trend-empty:        #e2e8f0;
+  --accent-orange:      #F48B29;
+  --accent-blue:        #2E6CD1;
+  --accent-green:       #5CC665;
+  --accent-pink:        #EA45A2;
+  --accent-purple:      #7B3ED6;
+  --accent-lime:        #88C057;
+  --accent-cyan:        #00B5D8;
+  --accent-yellow:      #FCE300;
 
-  --btn-primary-bg:     #5DCAA5;
+  --btn-primary-bg:     #88C057;
   --btn-primary-text:   #ffffff;
-  --btn-primary-hover:  #4bb894;
+  --btn-primary-hover:  #75a84a;
   --btn-action-bg:      #f1f5f9;
   --btn-action-text:    #111827;
   --btn-action-hover:   #e2e8f0;
 
   --input-bg:           #ffffff;
   --input-border:       #e2e8f0;
-  --input-focus-border: #5DCAA5;
-  --input-focus-shadow: rgba(93, 202, 165, 0.12);
+  --input-focus-border: #88C057;
+  --input-focus-shadow: rgba(136, 192, 87, 0.12);
   --placeholder:        #9ca3af;
 
   /* Dark Tinted Icon Boxes */
-  --icon-bg-teal:       #0f2e26;
-  --icon-text-teal:     #5DCAA5;
-  --icon-bg-blue:       #0d243a;
-  --icon-text-blue:     #4aa1f3;
-  --icon-bg-amber:      #332200;
-  --icon-text-amber:    #f5a623;
-  --icon-bg-red:        #2a0f0f;
-  --icon-text-red:      #e24b4a;
-  --icon-bg-purple:     #1e1133;
-  --icon-text-purple:   #9b6cfa;
+  --icon-bg-teal:       rgba(92, 198, 101, 0.1);
+  --icon-text-teal:     #5CC665;
+  --icon-bg-blue:       rgba(46, 108, 209, 0.1);
+  --icon-text-blue:     #2E6CD1;
+  --icon-bg-amber:      rgba(244, 139, 41, 0.1);
+  --icon-text-amber:    #F48B29;
+  --icon-bg-red:        rgba(234, 69, 162, 0.1);
+  --icon-text-red:      #EA45A2;
+  --icon-bg-purple:     rgba(123, 62, 214, 0.1);
+  --icon-text-purple:   #7B3ED6;
 
-  --tag-sops-bg:        #0f2e26;
-  --tag-sops-text:      #5DCAA5;
-  --tag-policies-bg:    #0d243a;
-  --tag-policies-text:  #4aa1f3;
-  --tag-templates-bg:   #332200;
-  --tag-templates-text: #f5a623;
-  --tag-faqs-bg:        #2a0f0f;
-  --tag-faqs-text:      #e24b4a;
-  --tag-guidelines-bg:  #1e1133;
-  --tag-guidelines-text:#9b6cfa;
+  --tag-sops-bg:        rgba(92, 198, 101, 0.1);
+  --tag-sops-text:      #5CC665;
+  --tag-policies-bg:    rgba(46, 108, 209, 0.1);
+  --tag-policies-text:  #2E6CD1;
+  --tag-templates-bg:   rgba(244, 139, 41, 0.1);
+  --tag-templates-text: #F48B29;
+  --tag-faqs-bg:        rgba(234, 69, 162, 0.1);
+  --tag-faqs-text:      #EA45A2;
+  --tag-guidelines-bg:  rgba(123, 62, 214, 0.1);
+  --tag-guidelines-text:#7B3ED6;
   
-  --tag-hr-bg:          #0f2e26;
-  --tag-hr-text:        #5DCAA5;
-  --tag-it-bg:          #0d243a;
-  --tag-it-text:        #4aa1f3;
-  --tag-finance-bg:     #332200;
-  --tag-finance-text:   #f5a623;
+  --tag-hr-bg:          rgba(92, 198, 101, 0.1);
+  --tag-hr-text:        #5CC665;
+  --tag-it-bg:          rgba(46, 108, 209, 0.1);
+  --tag-it-text:        #2E6CD1;
+  --tag-finance-bg:     rgba(244, 139, 41, 0.1);
+  --tag-finance-text:   #F48B29;
   --tag-admin-bg:       #222222;
   --tag-admin-text:     #aaaaaa;
 
@@ -79,7 +78,7 @@
   --table-row-border:   #e2e8f0;
   --table-row-hover:    #f1f5f9;
 
-  --edit-icon:          #4aa1f3;
+  --edit-icon:          #2E6CD1;
   --delete-icon:        #e24b4a;
   --divider:            #e2e8f0;
 }
