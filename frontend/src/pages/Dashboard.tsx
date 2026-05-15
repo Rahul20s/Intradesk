@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Container, Grid, Card, CardContent, Typography, Box, Divider, Button, LinearProgress, TextField
 } from '@mui/material';
 import { 
-  Description, LibraryBooks, Article, Help, Group, CheckCircleOutline, UploadFile, Add, Search, Assessment
+  Description, LibraryBooks, Article, Help, Group, CheckCircleOutline, UploadFile, Add, Search, Assessment, Business, AccountBalance
 } from '@mui/icons-material';
 import api from '../services/api';
 
@@ -22,17 +22,48 @@ const Dashboard: React.FC = () => {
     faqs: 0
   });
 
+  const [recentDocs, setRecentDocs] = useState<any[]>([]);
+
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get('/documents/stats/overview');
-        setStats(response.data);
+        const [statsRes, docsRes] = await Promise.all([
+          api.get('/documents/stats/overview'),
+          api.get('/documents?limit=50')
+        ]);
+        setStats(statsRes.data);
+        setRecentDocs(docsRes.data.data || []);
       } catch (error) {
-        console.error('Failed to fetch statistics:', error);
+        console.error('Failed to fetch dashboard data:', error);
       }
     };
-    fetchStats();
+    fetchData();
   }, []);
+
+  // Calculate department percentages based on recent docs
+  const departmentStats = useMemo(() => {
+    if (recentDocs.length === 0) return [];
+    
+    const counts: Record<string, number> = {};
+    recentDocs.forEach(doc => {
+      counts[doc.department] = (counts[doc.department] || 0) + 1;
+    });
+
+    const total = recentDocs.length;
+    const colors = ['teal', 'blue', 'amber', 'red', 'purple'];
+    
+    return Object.entries(counts)
+      .map(([name, count], index) => ({
+        name,
+        code: name.substring(0, 3).toUpperCase(),
+        percent: Math.round((count / total) * 100),
+        color: colors[index % colors.length]
+      }))
+      .sort((a, b) => b.percent - a.percent)
+      .slice(0, 4); // Top 4 departments
+  }, [recentDocs]);
+
+  const latestUpdates = recentDocs.slice(0, 5);
 
   const currentDate = new Date().toLocaleDateString('en-US', { 
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
@@ -44,7 +75,7 @@ const Dashboard: React.FC = () => {
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
         <Box>
           <Typography variant="h5" sx={{ color: 'var(--text-primary)', fontWeight: 600, mb: 0.5 }}>
-            Good morning, {userName} 👋
+            Welcome, {userName} 👋
           </Typography>
           <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
             {currentDate} · Here's what's happening at CFMARC
@@ -97,7 +128,7 @@ const Dashboard: React.FC = () => {
       </Grid>
 
       <Grid container spacing={3}>
-        {/* Left Column: 2x2 Stats & Recently Viewed */}
+        {/* Left Column: 2x2 Stats & Department/Category */}
         <Grid item xs={12} md={7}>
           {/* 2x2 Grid for Stat Cards */}
           <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -106,7 +137,7 @@ const Dashboard: React.FC = () => {
                 <CardContent sx={{ p: 2 }}>
                   <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ width: 36, height: 36, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--icon-bg-teal)', color: 'var(--icon-text-teal)', mb: 1.5 }}>
-                      <Description fontSize="small" />
+                      <Article fontSize="small" />
                     </Box>
                     <Typography variant="caption" sx={{ color: 'var(--text-secondary)', mb: 0.5 }}>Total Documents</Typography>
                     <Typography variant="h5" sx={{ color: 'var(--text-primary)', fontWeight: 600, mb: 0.5 }}>{stats.total}</Typography>
@@ -119,10 +150,10 @@ const Dashboard: React.FC = () => {
                 <CardContent sx={{ p: 2 }}>
                   <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ width: 36, height: 36, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--icon-bg-blue)', color: 'var(--icon-text-blue)', mb: 1.5 }}>
-                      <Assessment fontSize="small" />
+                      <Business fontSize="small" />
                     </Box>
-                    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', mb: 0.5 }}>Total Views</Typography>
-                    <Typography variant="h5" sx={{ color: 'var(--text-primary)', fontWeight: 600, mb: 0.5 }}>124</Typography>
+                    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', mb: 0.5 }}>Company Policies</Typography>
+                    <Typography variant="h5" sx={{ color: 'var(--text-primary)', fontWeight: 600, mb: 0.5 }}>{stats.policies}</Typography>
                   </Box>
                 </CardContent>
               </Card>
@@ -132,10 +163,10 @@ const Dashboard: React.FC = () => {
                 <CardContent sx={{ p: 2 }}>
                   <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ width: 36, height: 36, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--icon-bg-amber)', color: 'var(--icon-text-amber)', mb: 1.5 }}>
-                      <Group fontSize="small" />
+                      <LibraryBooks fontSize="small" />
                     </Box>
-                    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', mb: 0.5 }}>Active Users</Typography>
-                    <Typography variant="h5" sx={{ color: 'var(--text-primary)', fontWeight: 600, mb: 0.5 }}>8</Typography>
+                    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', mb: 0.5 }}>SOPs Available</Typography>
+                    <Typography variant="h5" sx={{ color: 'var(--text-primary)', fontWeight: 600, mb: 0.5 }}>{stats.sops}</Typography>
                   </Box>
                 </CardContent>
               </Card>
@@ -145,10 +176,10 @@ const Dashboard: React.FC = () => {
                 <CardContent sx={{ p: 2 }}>
                   <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Box sx={{ width: 36, height: 36, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--icon-bg-red)', color: 'var(--icon-text-red)', mb: 1.5 }}>
-                      <CheckCircleOutline fontSize="small" />
+                      <Help fontSize="small" />
                     </Box>
-                    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', mb: 0.5 }}>Pending Reviews</Typography>
-                    <Typography variant="h5" sx={{ color: 'var(--text-primary)', fontWeight: 600, mb: 0.5 }}>3</Typography>
+                    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', mb: 0.5 }}>FAQs</Typography>
+                    <Typography variant="h5" sx={{ color: 'var(--text-primary)', fontWeight: 600, mb: 0.5 }}>{stats.faqs}</Typography>
                   </Box>
                 </CardContent>
               </Card>
@@ -159,15 +190,11 @@ const Dashboard: React.FC = () => {
           <Card sx={{ background: 'var(--card-bg-white)', borderColor: 'var(--card-border)', borderWidth: 1, borderStyle: 'solid', borderRadius: 2, mb: 3 }}>
             <CardContent sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="subtitle1" sx={{ color: 'var(--text-primary)', fontWeight: 600 }}>Department Activity</Typography>
-                <Typography variant="caption" sx={{ color: 'var(--icon-text-teal)', cursor: 'pointer' }}>Full report</Typography>
+                <Typography variant="subtitle1" sx={{ color: 'var(--text-primary)', fontWeight: 600 }}>Department Focus</Typography>
+                <Typography variant="caption" sx={{ color: 'var(--icon-text-teal)', cursor: 'pointer' }}>Based on recent docs</Typography>
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {[
-                  { name: 'Human Resources', code: 'HR', percent: 80, color: 'teal' },
-                  { name: 'IT Department', code: 'IT', percent: 60, color: 'blue' },
-                  { name: 'Finance', code: 'FIN', percent: 35, color: 'amber' }
-                ].map((item, i) => (
+                {departmentStats.length > 0 ? departmentStats.map((item, i) => (
                   <Box key={i} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                       <Box sx={{ width: 32, height: 32, borderRadius: 1.5, backgroundColor: `var(--icon-bg-${item.color})`, color: `var(--icon-text-${item.color})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '0.75rem' }}>
@@ -187,7 +214,9 @@ const Dashboard: React.FC = () => {
                       <Typography variant="caption" sx={{ color: `var(--icon-text-${item.color})`, width: 30, textAlign: 'right' }}>{item.percent}%</Typography>
                     </Box>
                   </Box>
-                ))}
+                )) : (
+                  <Typography variant="body2" sx={{ color: 'var(--text-muted)', py: 2, textAlign: 'center' }}>No recent department activity</Typography>
+                )}
               </Box>
             </CardContent>
           </Card>
@@ -227,29 +256,34 @@ const Dashboard: React.FC = () => {
             <CardContent sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="subtitle1" sx={{ color: 'var(--text-primary)', fontWeight: 600 }}>Latest Updates</Typography>
-                <Typography variant="caption" sx={{ color: 'var(--icon-text-teal)', cursor: 'pointer' }}>View all</Typography>
+                <Typography variant="caption" sx={{ color: 'var(--icon-text-teal)', cursor: 'pointer' }} onClick={() => navigate('/documents/default')}>View all</Typography>
               </Box>
               
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {[
-                  { title: 'New SOP uploaded', desc: 'Test.pdf added to HR department', time: '2 hours ago · Admin', color: 'teal', icon: <Description fontSize="small" /> },
-                  { title: 'FAQ updated', desc: '"How to Raise Complaint?" answer revised', time: 'Yesterday · Admin', color: 'amber', icon: <Help fontSize="small" /> },
-                  { title: 'New user access', desc: '3 employees onboarded to portal', time: '2 days ago · IT Dept', color: 'blue', icon: <Group fontSize="small" /> },
-                  { title: 'Policy review due', desc: 'Leave Policy expires in 7 days', time: 'Reminder · Compliance', color: 'red', icon: <CheckCircleOutline fontSize="small" /> },
-                  { title: 'Document downloaded', desc: 'Test.pdf by Rahul S.', time: '3 days ago · HR Dept', color: 'blue', icon: <Assessment fontSize="small" /> }
-                ].map((item, i) => (
-                  <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                    <Box sx={{ mt: 0.5, p: 1, borderRadius: '50%', backgroundColor: `var(--icon-bg-${item.color})`, color: `var(--icon-text-${item.color})`, display: 'flex' }}>
-                      {item.icon}
+                {latestUpdates.length > 0 ? latestUpdates.map((doc, i) => {
+                  const isFaq = doc.category === 'FAQS';
+                  const color = isFaq ? 'amber' : (doc.category === 'POLICIES' ? 'blue' : 'teal');
+                  const icon = isFaq ? <Help fontSize="small" /> : (doc.category === 'POLICIES' ? <Business fontSize="small" /> : <Description fontSize="small" />);
+                  const time = new Date(doc.createdAt).toLocaleDateString();
+                  
+                  return (
+                    <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                      <Box sx={{ mt: 0.5, p: 1, borderRadius: '50%', backgroundColor: `var(--icon-bg-${color})`, color: `var(--icon-text-${color})`, display: 'flex' }}>
+                        {icon}
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                          {doc.title} <Typography component="span" variant="caption" sx={{ color: 'var(--text-secondary)' }}>— {doc.department}</Typography>
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'var(--text-muted)' }}>
+                          {doc.category} · Added {time} {doc.uploader ? `by ${doc.uploader.name.split(' ')[0]}` : ''}
+                        </Typography>
+                      </Box>
                     </Box>
-                    <Box>
-                      <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontWeight: 500 }}>
-                        {item.title} <Typography component="span" variant="caption" sx={{ color: 'var(--text-secondary)' }}>— {item.desc}</Typography>
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: 'var(--text-muted)' }}>{item.time}</Typography>
-                    </Box>
-                  </Box>
-                ))}
+                  );
+                }) : (
+                  <Typography variant="body2" sx={{ color: 'var(--text-muted)', py: 2, textAlign: 'center' }}>No recent updates</Typography>
+                )}
               </Box>
             </CardContent>
           </Card>

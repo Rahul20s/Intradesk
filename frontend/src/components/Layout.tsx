@@ -17,7 +17,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useMsal } from '@azure/msal-react';
 
-const drawerWidth = 260;
+const drawerWidth = 275;
 
 const colors = {
   sidebarBg: 'var(--sidebar-bg)',
