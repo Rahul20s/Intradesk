@@ -34,12 +34,19 @@ const colors = {
   cardBorder: 'var(--card-border)',
 };
 
+const drawerBgStyle = {
+  boxSizing: 'border-box' as const, 
+  width: drawerWidth, 
+  backgroundColor: colors.sidebarBg,
+  backgroundImage: `linear-gradient(to bottom, rgba(13, 13, 13, 0.75), rgba(13, 13, 13, 0.95)), url('/sidebar-bg.png')`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  borderRight: `1px solid #222222`
+};
+
 const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({
-    'Policies': true,
-    'SOPs': true
-  });
+  const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -87,7 +94,7 @@ const Layout: React.FC = () => {
     <div>
       <Toolbar sx={{ 
         display: 'flex', justifyContent: 'center', alignItems: 'center', py: 3,
-        background: colors.sidebarBg, borderBottom: `1px solid #222222`
+        background: 'transparent', borderBottom: `1px solid #222222`
       }}>
         <Box component="img" sx={{ height: 70, width: 'auto', maxWidth: '90%', objectFit: 'contain' }} alt="Logo" src="/company-logo.png" />
       </Toolbar>
@@ -115,7 +122,7 @@ const Layout: React.FC = () => {
                 <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
                 <ListItemText 
                   primary={item.text}
-                  sx={{ '& .MuiListItemText-primary': { fontSize: '0.95rem', fontWeight: 500, color: (!item.children && isExactSelected(item.path)) ? colors.activeItemText : colors.inactiveItemText } }}
+                  sx={{ '& .MuiListItemText-primary': { fontSize: '0.85rem', fontWeight: 500, color: (!item.children && isExactSelected(item.path)) ? colors.activeItemText : colors.inactiveItemText } }}
                 />
                 {item.children ? (openMenus[item.text] ? <ExpandLess sx={{ color: colors.inactiveItemText }} /> : <ExpandMore sx={{ color: colors.inactiveItemText }} />) : null}
               </ListItemButton>
@@ -141,7 +148,7 @@ const Layout: React.FC = () => {
                     >
                       <ListItemText 
                         primary={child.text} 
-                        sx={{ '& .MuiListItemText-primary': { fontSize: '0.85rem', color: isExactSelected(child.path) ? colors.activeItemBorder : colors.inactiveItemText } }}
+                        sx={{ '& .MuiListItemText-primary': { fontSize: '0.75rem', color: isExactSelected(child.path) ? colors.activeItemBorder : colors.inactiveItemText } }}
                       />
                     </ListItemButton>
                   ))}
@@ -170,10 +177,10 @@ const Layout: React.FC = () => {
         </Toolbar>
       </AppBar>
       <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
-        <Drawer variant="temporary" open={mobileOpen} onClose={handleDrawerToggle} ModalProps={{ keepMounted: true }} sx={{ display: { xs: 'block', sm: 'none' }, '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, backgroundColor: colors.sidebarBg, borderRight: `1px solid #222222` } }}>
+        <Drawer variant="temporary" open={mobileOpen} onClose={handleDrawerToggle} ModalProps={{ keepMounted: true }} sx={{ display: { xs: 'block', sm: 'none' }, '& .MuiDrawer-paper': drawerBgStyle }}>
           {drawer}
         </Drawer>
-        <Drawer variant="permanent" sx={{ display: { xs: 'none', sm: 'block' }, '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, backgroundColor: colors.sidebarBg, borderRight: `1px solid #222222` } }} open>
+        <Drawer variant="permanent" sx={{ display: { xs: 'none', sm: 'block' }, '& .MuiDrawer-paper': drawerBgStyle }} open>
           {drawer}
         </Drawer>
       </Box>
