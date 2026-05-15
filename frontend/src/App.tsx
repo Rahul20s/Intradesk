@@ -64,6 +64,7 @@ function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="documents/:category" element={<Documents />} />
+            <Route path="documents/:category/:department" element={<Documents />} />
             <Route path="admin" element={
               <AdminProtectedRoute>
                 <Admin />
