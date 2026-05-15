@@ -1,5 +1,5 @@
 :root {
-  --page-bg:            #111111;
+  --page-bg:            #F4F7FB;
   --sidebar-bg:         #0d0d0d;
   --header-bg:          #0d0d0d;
   
@@ -12,35 +12,35 @@
   --header-text:        #ffffff;
   --header-border:      #333333;
 
-  --card-bg-white:      #161616;
-  --card-bg-blue:       #161616;
-  --card-bg-mint:       #161616;
-  --card-border:        #222222;
+  --card-bg-white:      #ffffff;
+  --card-bg-blue:       #ffffff;
+  --card-bg-mint:       #ffffff;
+  --card-border:        #e2e8f0;
 
-  --text-primary:       #f5f5f5;
-  --text-secondary:     #a3a3a3;
-  --text-muted:         #666666;
+  --text-primary:       #111827;
+  --text-secondary:     #4b5563;
+  --text-muted:         #9ca3af;
 
-  --label-blue:         #a3a3a3;
+  --label-blue:         #4b5563;
   --label-mint:         #5DCAA5;
-  --number-blue:        #ffffff;
-  --number-mint:        #ffffff;
+  --number-blue:        #111827;
+  --number-mint:        #111827;
   --trend-blue:         #5DCAA5;
   --trend-mint:         #5DCAA5;
-  --trend-empty:        #333333;
+  --trend-empty:        #e2e8f0;
 
   --btn-primary-bg:     #5DCAA5;
-  --btn-primary-text:   #0d0d0d;
+  --btn-primary-text:   #ffffff;
   --btn-primary-hover:  #4bb894;
-  --btn-action-bg:      #1a1a1a;
-  --btn-action-text:    #ffffff;
-  --btn-action-hover:   #222222;
+  --btn-action-bg:      #f1f5f9;
+  --btn-action-text:    #111827;
+  --btn-action-hover:   #e2e8f0;
 
-  --input-bg:           #0d0d0d;
-  --input-border:       #333333;
+  --input-bg:           #ffffff;
+  --input-border:       #e2e8f0;
   --input-focus-border: #5DCAA5;
   --input-focus-shadow: rgba(93, 202, 165, 0.12);
-  --placeholder:        #666666;
+  --placeholder:        #9ca3af;
 
   /* Dark Tinted Icon Boxes */
   --icon-bg-teal:       #0f2e26;
@@ -74,12 +74,12 @@
   --tag-admin-bg:       #222222;
   --tag-admin-text:     #aaaaaa;
 
-  --table-header-bg:    #161616;
-  --table-header-text:  #a3a3a3;
-  --table-row-border:   #222222;
-  --table-row-hover:    #1c1c1c;
+  --table-header-bg:    #f8fafc;
+  --table-header-text:  #4b5563;
+  --table-row-border:   #e2e8f0;
+  --table-row-hover:    #f1f5f9;
 
   --edit-icon:          #4aa1f3;
   --delete-icon:        #e24b4a;
-  --divider:            #222222;
+  --divider:            #e2e8f0;
 }

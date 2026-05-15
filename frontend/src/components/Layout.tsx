@@ -87,11 +87,11 @@ const Layout: React.FC = () => {
     <div>
       <Toolbar sx={{ 
         display: 'flex', justifyContent: 'center', alignItems: 'center', py: 3,
-        background: colors.sidebarBg, borderBottom: `1px solid ${colors.cardBorder}`
+        background: colors.sidebarBg, borderBottom: `1px solid #222222`
       }}>
         <Box component="img" sx={{ height: 70, width: 'auto', maxWidth: '90%', objectFit: 'contain' }} alt="Logo" src="/company-logo.png" />
       </Toolbar>
-      <Divider sx={{ borderColor: colors.cardBorder }} />
+      <Divider sx={{ borderColor: '#222222' }} />
       <List sx={{ py: 2 }}>
         {menuConfig.map((item) => (
           <React.Fragment key={item.text}>
@@ -156,8 +156,8 @@ const Layout: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" sx={{ width: { sm: `calc(100% - ${drawerWidth}px)` }, ml: { sm: `${drawerWidth}px` }, backgroundColor: colors.headerBg, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(10px)', borderBottom: `1px solid ${colors.cardBorder}` }}>
-        <Toolbar sx={{ py: 2 }}>
+      <AppBar position="fixed" sx={{ width: { sm: `calc(100% - ${drawerWidth}px)` }, ml: { sm: `${drawerWidth}px` }, backgroundColor: colors.headerBg, boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)', backdropFilter: 'blur(10px)', borderBottom: `1px solid #222222` }}>
+        <Toolbar sx={{ py: 1.5 }}>
           <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { sm: 'none' }, color: colors.headerText }}>
             <MenuIcon />
           </IconButton>
@@ -170,10 +170,10 @@ const Layout: React.FC = () => {
         </Toolbar>
       </AppBar>
       <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
-        <Drawer variant="temporary" open={mobileOpen} onClose={handleDrawerToggle} ModalProps={{ keepMounted: true }} sx={{ display: { xs: 'block', sm: 'none' }, '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, backgroundColor: colors.sidebarBg, borderRight: `1px solid ${colors.cardBorder}` } }}>
+        <Drawer variant="temporary" open={mobileOpen} onClose={handleDrawerToggle} ModalProps={{ keepMounted: true }} sx={{ display: { xs: 'block', sm: 'none' }, '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, backgroundColor: colors.sidebarBg, borderRight: `1px solid #222222` } }}>
           {drawer}
         </Drawer>
-        <Drawer variant="permanent" sx={{ display: { xs: 'none', sm: 'block' }, '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, backgroundColor: colors.sidebarBg, borderRight: `1px solid ${colors.cardBorder}` } }} open>
+        <Drawer variant="permanent" sx={{ display: { xs: 'none', sm: 'block' }, '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, backgroundColor: colors.sidebarBg, borderRight: `1px solid #222222` } }} open>
           {drawer}
         </Drawer>
       </Box>
