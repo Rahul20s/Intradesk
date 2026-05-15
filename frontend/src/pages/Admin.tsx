@@ -39,6 +39,22 @@ const CATEGORY_MAP: Record<string, string[]> = {
   'Guidelines': ['General']
 };
 
+const toBackendCategory = (frontendCat: string) => {
+  if (frontendCat === 'Forms & Templates') return 'TEMPLATES';
+  return frontendCat.toUpperCase();
+};
+
+const toFrontendCategory = (backendCat: string) => {
+  if (!backendCat) return '';
+  const upper = backendCat.toUpperCase();
+  if (upper === 'TEMPLATES') return 'Forms & Templates';
+  if (upper === 'POLICIES') return 'Policies';
+  if (upper === 'SOPS') return 'SOPs';
+  if (upper === 'FAQS') return 'FAQs';
+  if (upper === 'GUIDELINES') return 'Guidelines';
+  return backendCat;
+};
+
 const Admin: React.FC = () => {
   const [formData, setFormData] = useState({
     title: '',
@@ -126,7 +142,7 @@ const Admin: React.FC = () => {
       setUploading(true);
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
-      formDataToSend.append('category', formData.category);
+      formDataToSend.append('category', toBackendCategory(formData.category));
       formDataToSend.append('department', formData.department);
       
       if (formData.category === 'FAQs') {
@@ -179,7 +195,7 @@ const Admin: React.FC = () => {
     setEditing(doc.id);
     setEditFormData({
       title: doc.title,
-      category: doc.category,
+      category: toFrontendCategory(doc.category),
       department: doc.department,
       question: doc.question || '',
       answer: doc.answer || ''
@@ -205,7 +221,11 @@ const Admin: React.FC = () => {
 
   const handleEditSubmit = async (id: string) => {
     try {
-      const response = await api.put(`/documents/${id}`, editFormData);
+      const dataToSend = {
+        ...editFormData,
+        category: toBackendCategory(editFormData.category)
+      };
+      const response = await api.put(`/documents/${id}`, dataToSend);
       if (response.status === 200) {
         alert('Document updated successfully!');
         setEditing(null);
@@ -351,10 +371,10 @@ const Admin: React.FC = () => {
                     <Box sx={{ flexGrow: 1 }}>
                       <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5, lineHeight: 1.2 }}>{doc.title}</Typography>
                       <Box sx={{ mb: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                        <Chip label={doc.category} size="small" sx={{ height: 20, fontSize: '0.7rem', bgcolor: 'rgba(46, 108, 209, 0.1)', color: '#2E6CD1', fontWeight: 600 }} />
+                        <Chip label={toFrontendCategory(doc.category)} size="small" sx={{ height: 20, fontSize: '0.7rem', bgcolor: 'rgba(46, 108, 209, 0.1)', color: '#2E6CD1', fontWeight: 600 }} />
                         <Chip label={doc.department} size="small" variant="outlined" sx={{ height: 20, fontSize: '0.7rem' }} />
                       </Box>
-                      {doc.category === 'FAQs' && doc.question && doc.answer ? (
+                      {doc.category === 'FAQS' && doc.question && doc.answer ? (
                         <Box sx={{ mb: 1, backgroundColor: '#f9f9f9', p: 1, borderRadius: 1 }}>
                           <Typography variant="body2" sx={{ mb: 0.5, fontSize: '0.8rem' }}><strong>Q:</strong> {doc.question}</Typography>
                           <Typography variant="body2" sx={{ fontSize: '0.8rem' }}><strong>A:</strong> {doc.answer}</Typography>
