@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Container,
   Grid,
   Card,
   CardContent,
@@ -14,7 +13,8 @@ import {
   Box,
   Alert,
   Chip,
-  IconButton
+  IconButton,
+  Divider
 } from '@mui/material';
 import { CloudUpload, Delete, Edit } from '@mui/icons-material';
 import api from '../services/api';
@@ -30,6 +30,14 @@ interface Document {
   question?: string;
   answer?: string;
 }
+
+const CATEGORY_MAP: Record<string, string[]> = {
+  'Policies': ['HR', 'IT', 'Company'],
+  'SOPs': ['LMS', 'Spine', 'SAP'],
+  'Forms & Templates': ['General'],
+  'FAQs': ['General'],
+  'Guidelines': ['General']
+};
 
 const Admin: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -51,23 +59,29 @@ const Admin: React.FC = () => {
     answer: ''
   });
 
-  const categories = ['Policies', 'SOPs', 'Templates', 'FAQs'];
-  const departments = ['IT', 'HR', 'Accounts', 'Finance', 'Operations', 'Legal'];
-
   const handleInputChange = (field: string) => (event: any) => {
-    setFormData({
-      ...formData,
-      [field]: event.target.value
-    });
+    const value = event.target.value;
+    if (field === 'category') {
+      // Automatically reset department and set to 'General' if it's the only option
+      const submenus = CATEGORY_MAP[value] || ['General'];
+      setFormData({
+        ...formData,
+        category: value,
+        department: submenus.length === 1 ? submenus[0] : ''
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [field]: value
+      });
+    }
   };
 
-  // Fetch real documents from API
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const response = await api.get('/documents');
+        const response = await api.get('/documents?limit=100');
         const data = response.data.data || [];
-        // Remove duplicates by ID
         const uniqueDocuments = data.filter((doc: any, index: number, self: any[]) =>
           index === self.findIndex((d: any) => d.id === doc.id)
         );
@@ -76,23 +90,18 @@ const Admin: React.FC = () => {
         console.error('Failed to fetch documents:', error);
       }
     };
-
     fetchDocuments();
   }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setFormData({
-        ...formData,
-        file: event.target.files[0]
-      });
+      setFormData({ ...formData, file: event.target.files[0] });
     }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    
-    if (uploading) return; // Prevent double submission
+    if (uploading) return;
     
     try {
       setUploading(true);
@@ -111,27 +120,14 @@ const Admin: React.FC = () => {
       }
 
       const response = await api.post('/documents', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
 
       if (response.status === 200 || response.status === 201) {
         alert('Document uploaded successfully!');
-        setFormData({
-          title: '',
-          category: '',
-          department: '',
-          file: null,
-          question: '',
-          answer: ''
-        });
-        // Re-fetch documents from API to avoid duplicates
-        const fetchDocuments = async () => {
-          const res = await api.get('/documents');
-          setDocuments(res.data.data || []);
-        };
-        fetchDocuments();
+        setFormData({ title: '', category: '', department: '', file: null, question: '', answer: '' });
+        const res = await api.get('/documents?limit=100');
+        setDocuments(res.data.data || []);
       } else {
         alert('Failed to upload document');
       }
@@ -144,21 +140,13 @@ const Admin: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this document?')) {
-      return;
-    }
-
+    if (!window.confirm('Are you sure you want to delete this document?')) return;
     try {
       const response = await api.delete(`/documents/${id}`);
-
       if (response.status === 200 || response.status === 204) {
         alert('Document deleted successfully!');
-        // Re-fetch documents from API
-        const fetchDocuments = async () => {
-          const res = await api.get('/documents');
-          setDocuments(res.data.data || []);
-        };
-        fetchDocuments();
+        const res = await api.get('/documents?limit=100');
+        setDocuments(res.data.data || []);
       } else {
         alert('Failed to delete document');
       }
@@ -180,25 +168,30 @@ const Admin: React.FC = () => {
   };
 
   const handleEditInputChange = (field: string) => (event: any) => {
-    setEditFormData({
-      ...editFormData,
-      [field]: event.target.value
-    });
+    const value = event.target.value;
+    if (field === 'category') {
+      const submenus = CATEGORY_MAP[value] || ['General'];
+      setEditFormData({
+        ...editFormData,
+        category: value,
+        department: submenus.length === 1 ? submenus[0] : ''
+      });
+    } else {
+      setEditFormData({
+        ...editFormData,
+        [field]: value
+      });
+    }
   };
 
   const handleEditSubmit = async (id: string) => {
     try {
       const response = await api.put(`/documents/${id}`, editFormData);
-
       if (response.status === 200) {
         alert('Document updated successfully!');
         setEditing(null);
-        // Re-fetch documents from API
-        const fetchDocuments = async () => {
-          const res = await api.get('/documents');
-          setDocuments(res.data.data || []);
-        };
-        fetchDocuments();
+        const res = await api.get('/documents?limit=100');
+        setDocuments(res.data.data || []);
       } else {
         alert('Failed to update document');
       }
@@ -210,404 +203,147 @@ const Admin: React.FC = () => {
 
   const handleCancelEdit = () => {
     setEditing(null);
-    setEditFormData({
-      title: '',
-      category: '',
-      department: '',
-      question: '',
-      answer: ''
-    });
   };
 
+  const availableSubmenus = formData.category ? CATEGORY_MAP[formData.category] || [] : [];
+  const availableEditSubmenus = editFormData.category ? CATEGORY_MAP[editFormData.category] || [] : [];
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4, background: 'var(--page-bg)' }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Admin Panel - Document Management
-      </Typography>
+    <Box sx={{ height: 'calc(100vh - 100px)', overflow: 'hidden', display: 'flex', gap: 3 }}>
+      
+      {/* Upload Form - Left Side (35%) */}
+      <Card sx={{ flex: '0 0 35%', display: 'flex', flexDirection: 'column', borderRadius: 0, borderTop: '6px solid var(--accent-blue)', height: '100%' }}>
+        <Box sx={{ p: 2, textAlign: 'center', borderBottom: '1px solid var(--card-border)', backgroundColor: '#fff' }}>
+          <Typography variant="subtitle2" sx={{ color: 'var(--accent-blue)', fontWeight: 600 }}>
+            Upload New Document
+          </Typography>
+        </Box>
+        <Box sx={{ p: 3, overflowY: 'auto', flex: 1, backgroundColor: '#fff' }}>
+          <Box component="form" onSubmit={handleSubmit}>
+            <TextField
+              fullWidth label="Document Title" value={formData.title} onChange={handleInputChange('title')}
+              margin="normal" required size="small"
+              sx={{ mb: 2, '& .MuiOutlinedInput-root': { backgroundColor: 'var(--input-bg)' } }}
+            />
+            
+            <FormControl fullWidth margin="normal" required size="small">
+              <InputLabel>Menu (Category)</InputLabel>
+              <Select value={formData.category} label="Menu (Category)" onChange={handleInputChange('category')} sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }}>
+                {Object.keys(CATEGORY_MAP).map((cat) => (
+                  <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-      <Grid container spacing={4}>
-        {/* Upload Form */}
-        <Grid item xs={12} md={4}>
-          <Card sx={{ backgroundColor: 'var(--card-bg-white)', border: '0.5px solid var(--card-border)', borderRadius: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ color: 'var(--header-color)' }}>
-                Upload New Document
-              </Typography>
-              <Box component="form" onSubmit={handleSubmit}>
-                <TextField
-                  fullWidth
-                  label="Document Title"
-                  value={formData.title}
-                  onChange={handleInputChange('title')}
-                  margin="normal"
-                  required
-                  sx={{ 
-                    mb: 2,
-                    '& .MuiOutlinedInput-root': {
-                      backgroundColor: 'var(--input-bg)',
-                      borderRadius: 2,
-                      borderColor: 'var(--input-border)',
-                      '&:hover': {
-                        borderColor: 'var(--input-focus-border)',
-                      },
-                      '&.Mui-focused': {
-                        borderColor: 'var(--input-focus-border)',
-                        boxShadow: 'var(--input-focus-shadow)',
-                      },
-                      '& .MuiInputBase-input::placeholder': {
-                        color: 'var(--placeholder)',
-                      }
-                    }
-                  }}
-                />
-                
-                <FormControl fullWidth margin="normal" required>
-                  <InputLabel>Category</InputLabel>
-                  <Select
-                    value={formData.category}
-                    label="Category"
-                    onChange={handleInputChange('category')}
-                    sx={{ 
-                      mb: 2,
-                      '& .MuiOutlinedInput-root': {
-                        backgroundColor: 'var(--input-bg)',
-                        borderRadius: 2,
-                        borderColor: 'var(--input-border)',
-                        '&:hover': {
-                          borderColor: 'var(--input-focus-border)',
-                        },
-                        '&.Mui-focused': {
-                          borderColor: 'var(--input-focus-border)',
-                          boxShadow: 'var(--input-focus-shadow)',
-                        },
-                        '& .MuiInputBase-input::placeholder': {
-                          color: 'var(--placeholder)',
-                        }
-                      }
-                    }}
-                  >
-                    {categories.map((cat) => (
-                      <MenuItem key={cat} value={cat}>
-                        {cat}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+            <FormControl fullWidth margin="normal" required size="small" disabled={!formData.category}>
+              <InputLabel>Submenu (Department)</InputLabel>
+              <Select value={formData.department} label="Submenu (Department)" onChange={handleInputChange('department')} sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }}>
+                {availableSubmenus.map((dept) => (
+                  <MenuItem key={dept} value={dept}>{dept}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-                <FormControl fullWidth margin="normal" required>
-                  <InputLabel>Department</InputLabel>
-                  <Select
-                    value={formData.department}
-                    label="Department"
-                    onChange={handleInputChange('department')}
-                    sx={{ 
-                      mb: 2,
-                      '& .MuiOutlinedInput-root': {
-                        backgroundColor: 'var(--input-bg)',
-                        borderRadius: 2,
-                        borderColor: 'var(--input-border)',
-                        '&:hover': {
-                          borderColor: 'var(--input-focus-border)',
-                        },
-                        '&.Mui-focused': {
-                          borderColor: 'var(--input-focus-border)',
-                          boxShadow: 'var(--input-focus-shadow)',
-                        },
-                        '& .MuiInputBase-input::placeholder': {
-                          color: 'var(--placeholder)',
-                        }
-                      }
-                    }}
-                  >
-                    {departments.map((dept) => (
-                      <MenuItem key={dept} value={dept}>
-                        {dept}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                {formData.category === 'FAQs' ? (
-                  <>
-                    <TextField
-                      fullWidth
-                      label="Question"
-                      value={formData.question}
-                      onChange={handleInputChange('question')}
-                      margin="normal"
-                      required
-                      multiline
-                      rows={3}
-                      sx={{ 
-                        mb: 2,
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: 'var(--input-bg)',
-                          borderRadius: 2,
-                          borderColor: 'var(--input-border)',
-                          '&:hover': {
-                            borderColor: 'var(--input-focus-border)',
-                          },
-                          '&.Mui-focused': {
-                            borderColor: 'var(--input-focus-border)',
-                            boxShadow: 'var(--input-focus-shadow)',
-                          },
-                          '& .MuiInputBase-input::placeholder': {
-                            color: 'var(--placeholder)',
-                          }
-                        }
-                      }}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Answer"
-                      value={formData.answer}
-                      onChange={handleInputChange('answer')}
-                      margin="normal"
-                      required
-                      multiline
-                      rows={4}
-                      sx={{ 
-                        mb: 2,
-                        '& .MuiOutlinedInput-root': {
-                          backgroundColor: 'var(--input-bg)',
-                          borderRadius: 2,
-                          borderColor: 'var(--input-border)',
-                          '&:hover': {
-                            borderColor: 'var(--input-focus-border)',
-                          },
-                          '&.Mui-focused': {
-                            borderColor: 'var(--input-focus-border)',
-                            boxShadow: 'var(--input-focus-shadow)',
-                          },
-                          '& .MuiInputBase-input::placeholder': {
-                            color: 'var(--placeholder)',
-                          }
-                        }
-                      }}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      variant="contained"
-                      component="label"
-                      fullWidth
-                      sx={{ mt: 2, mb: 2, background: 'var(--btn-primary-bg)', color: 'var(--btn-primary-text)' }}
-                      startIcon={<CloudUpload />}
-                    >
-                      Choose File
-                      <input
-                        type="file"
-                        hidden
-                        onChange={handleFileChange}
-                        accept=".pdf,.doc,.docx,.xls,.xlsx"
-                      />
-                    </Button>
-                    
-                    {formData.file && (
-                      <Alert severity="info" sx={{ mb: 2 }}>
-                        Selected: {formData.file.name}
-                      </Alert>
-                    )}
-                  </>
-                )}
-
-                <Button
-                  type="submit"
-                  variant="contained"
-                  fullWidth
-                  disabled={uploading || !formData.title || !formData.category || !formData.department || 
-                    (formData.category === 'FAQs' ? (!formData.question || !formData.answer) : !formData.file)}
-                  sx={{ background: 'var(--btn-primary-bg)', color: 'var(--btn-primary-text)' }}
-                >
-                  {uploading ? 'Uploading...' : 'Upload Document'}
+            {formData.category === 'FAQs' ? (
+              <>
+                <TextField fullWidth label="Question" value={formData.question} onChange={handleInputChange('question')} margin="normal" required multiline rows={3} size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
+                <TextField fullWidth label="Answer" value={formData.answer} onChange={handleInputChange('answer')} margin="normal" required multiline rows={4} size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
+              </>
+            ) : (
+              <>
+                <Button variant="outlined" component="label" fullWidth sx={{ mt: 1, mb: 2, borderColor: 'var(--accent-blue)', color: 'var(--accent-blue)' }} startIcon={<CloudUpload />}>
+                  Choose File
+                  <input type="file" hidden onChange={handleFileChange} accept=".pdf,.doc,.docx,.xls,.xlsx" />
                 </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+                {formData.file && <Alert severity="info" sx={{ mb: 2, py: 0, '& .MuiAlert-message': { fontSize: '0.8rem' } }}>Selected: {formData.file.name}</Alert>}
+              </>
+            )}
 
-        {/* Documents List */}
-        <Grid item xs={12} md={8}>
-          <Card sx={{ backgroundColor: 'var(--card-bg-white)', border: '0.5px solid var(--card-border)', borderRadius: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ color: 'var(--header-color)' }}>
-                Existing Documents
-              </Typography>
-              
-              {documents.map((doc) => (
-                <Card key={doc.id} sx={{ mb: 2, backgroundColor: 'var(--card-bg-white)', border: 'none', borderRadius: 3 }}>
-                  <CardContent>
-                    {editing === doc.id ? (
-                      <Box>
-                        <Typography variant="h6" gutterBottom sx={{ color: 'var(--header-color)' }}>
-                          Edit Document
+            <Button type="submit" variant="contained" fullWidth disabled={uploading || !formData.title || !formData.category || !formData.department || (formData.category === 'FAQs' ? (!formData.question || !formData.answer) : !formData.file)} sx={{ background: 'var(--btn-primary-bg)', color: '#fff', mt: 2 }}>
+              {uploading ? 'Uploading...' : 'Upload Document'}
+            </Button>
+          </Box>
+        </Box>
+      </Card>
+
+      {/* Documents List - Right Side (65%) */}
+      <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column', borderRadius: 0, borderTop: '6px solid var(--accent-green)', height: '100%' }}>
+        <Box sx={{ p: 2, textAlign: 'center', borderBottom: '1px solid var(--card-border)', backgroundColor: '#fff' }}>
+          <Typography variant="subtitle2" sx={{ color: 'var(--accent-green)', fontWeight: 600 }}>
+            Existing Documents
+          </Typography>
+        </Box>
+        <Box sx={{ flex: 1, overflowY: 'auto', p: 3, backgroundColor: 'var(--page-bg)' }}>
+          {documents.map((doc) => (
+            <Card key={doc.id} sx={{ mb: 2, border: '1px solid var(--card-border)', borderRadius: 1, boxShadow: 'none' }}>
+              <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                {editing === doc.id ? (
+                  <Box>
+                    <Typography variant="subtitle2" gutterBottom>Edit Document</Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                      <TextField fullWidth label="Title" value={editFormData.title} onChange={handleEditInputChange('title')} size="small" />
+                      <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                          <FormControl fullWidth size="small">
+                            <InputLabel>Menu</InputLabel>
+                            <Select value={editFormData.category} label="Menu" onChange={handleEditInputChange('category')}>
+                              {Object.keys(CATEGORY_MAP).map((cat) => <MenuItem key={cat} value={cat}>{cat}</MenuItem>)}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <FormControl fullWidth size="small" disabled={!editFormData.category}>
+                            <InputLabel>Submenu</InputLabel>
+                            <Select value={editFormData.department} label="Submenu" onChange={handleEditInputChange('department')}>
+                              {availableEditSubmenus.map((dept) => <MenuItem key={dept} value={dept}>{dept}</MenuItem>)}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                      </Grid>
+                      <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                        <Button variant="contained" onClick={() => handleEditSubmit(doc.id)} size="small" sx={{ background: 'var(--btn-primary-bg)' }}>Save</Button>
+                        <Button variant="outlined" onClick={handleCancelEdit} size="small" color="inherit">Cancel</Button>
+                      </Box>
+                    </Box>
+                  </Box>
+                ) : (
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5, lineHeight: 1.2 }}>{doc.title}</Typography>
+                      <Box sx={{ mb: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                        <Chip label={doc.category} size="small" sx={{ height: 20, fontSize: '0.7rem', bgcolor: 'rgba(46, 108, 209, 0.1)', color: '#2E6CD1', fontWeight: 600 }} />
+                        <Chip label={doc.department} size="small" variant="outlined" sx={{ height: 20, fontSize: '0.7rem' }} />
+                      </Box>
+                      {doc.category === 'FAQs' && doc.question && doc.answer ? (
+                        <Box sx={{ mb: 1, backgroundColor: '#f9f9f9', p: 1, borderRadius: 1 }}>
+                          <Typography variant="body2" sx={{ mb: 0.5, fontSize: '0.8rem' }}><strong>Q:</strong> {doc.question}</Typography>
+                          <Typography variant="body2" sx={{ fontSize: '0.8rem' }}><strong>A:</strong> {doc.answer}</Typography>
+                        </Box>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontSize: '0.8rem' }}>
+                          {doc.fileName || 'No file attached'}
                         </Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                          <TextField
-                            fullWidth
-                            label="Document Title"
-                            value={editFormData.title}
-                            onChange={handleEditInputChange('title')}
-                            size="small"
-                            sx={{ 
-                              mb: 2,
-                              '& .MuiOutlinedInput-root': {
-                                backgroundColor: 'var(--input-bg)',
-                                borderRadius: 2,
-                                borderColor: 'var(--input-border)',
-                                '&:hover': {
-                                  borderColor: 'var(--input-focus-border)',
-                                },
-                                '&.Mui-focused': {
-                                  borderColor: 'var(--input-focus-border)',
-                                  boxShadow: 'var(--input-focus-shadow)',
-                                },
-                                '& .MuiInputBase-input::placeholder': {
-                                  color: 'var(--placeholder)',
-                                }
-                              }
-                            }}
-                          />
-                          <FormControl fullWidth size="small">
-                            <InputLabel>Category</InputLabel>
-                            <Select
-                              value={editFormData.category}
-                              label="Category"
-                              onChange={handleEditInputChange('category')}
-                              sx={{ 
-                                mb: 2,
-                                '& .MuiOutlinedInput-root': {
-                                  backgroundColor: 'var(--input-bg)',
-                                  borderRadius: 2,
-                                  borderColor: 'var(--input-border)',
-                                  '&:hover': {
-                                    borderColor: 'var(--input-focus-border)',
-                                  },
-                                  '&.Mui-focused': {
-                                    borderColor: 'var(--input-focus-border)',
-                                    boxShadow: 'var(--input-focus-shadow)',
-                                  },
-                                  '& .MuiInputBase-input::placeholder': {
-                                    color: 'var(--placeholder)',
-                                  }
-                                }
-                              }}
-                            >
-                              {categories.map((cat) => (
-                                <MenuItem key={cat} value={cat}>
-                                  {cat}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          <FormControl fullWidth size="small">
-                            <InputLabel>Department</InputLabel>
-                            <Select
-                              value={editFormData.department}
-                              label="Department"
-                              onChange={handleEditInputChange('department')}
-                              sx={{ 
-                                mb: 2,
-                                '& .MuiOutlinedInput-root': {
-                                  backgroundColor: 'var(--input-bg)',
-                                  borderRadius: 2,
-                                  borderColor: 'var(--input-border)',
-                                  '&:hover': {
-                                    borderColor: 'var(--input-focus-border)',
-                                  },
-                                  '&.Mui-focused': {
-                                    borderColor: 'var(--input-focus-border)',
-                                    boxShadow: 'var(--input-focus-shadow)',
-                                  },
-                                  '& .MuiInputBase-input::placeholder': {
-                                    color: 'var(--placeholder)',
-                                  }
-                                }
-                              }}
-                            >
-                              {departments.map((dept) => (
-                                <MenuItem key={dept} value={dept}>
-                                  {dept}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Button
-                              variant="contained"
-                              onClick={() => handleEditSubmit(doc.id)}
-                              size="small"
-                              sx={{ background: 'var(--btn-primary-bg)', color: 'var(--btn-primary-text)' }}
-                            >
-                              Save
-                            </Button>
-                            <Button
-                              variant="outlined"
-                              onClick={handleCancelEdit}
-                              size="small"
-                              sx={{ background: 'var(--btn-secondary-bg)', color: 'var(--btn-secondary-text)' }}
-                            >
-                              Cancel
-                            </Button>
-                          </Box>
-                        </Box>
-                      </Box>
-                    ) : (
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <Box sx={{ flexGrow: 1 }}>
-                          <Typography variant="h6" gutterBottom>
-                            {doc.title}
-                          </Typography>
-                          <Box sx={{ mb: 1 }}>
-                            <Chip 
-                              label={doc.category} 
-                              size="small" 
-                              color="primary" 
-                              sx={{ mr: 1 }}
-                            />
-                            <Chip 
-                              label={doc.department} 
-                              size="small" 
-                              variant="outlined"
-                            />
-                          </Box>
-                          {doc.category === 'FAQS' && doc.question && doc.answer ? (
-                            <Box sx={{ mb: 1 }}>
-                              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                                <strong>Q:</strong> {doc.question}
-                              </Typography>
-                              <Typography variant="body2" color="text.secondary">
-                                <strong>A:</strong> {doc.answer}
-                              </Typography>
-                            </Box>
-                          ) : (
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                              {doc.fileName || 'No file'}
-                            </Typography>
-                          )}
-                          <Typography variant="caption" color="text.secondary">
-                            Uploaded by {doc.uploadedBy} on {doc.uploadedDate}
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <IconButton size="small" color="primary" onClick={() => handleEdit(doc)}>
-                            <Edit />
-                          </IconButton>
-                          <IconButton size="small" color="error" onClick={() => handleDelete(doc.id)}>
-                            <Delete />
-                          </IconButton>
-                        </Box>
-                      </Box>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </Container>
+                      )}
+                      <Typography variant="caption" color="text.secondary">
+                        Uploaded by {doc.uploadedBy} on {new Date(doc.uploadedDate).toLocaleDateString()}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex' }}>
+                      <IconButton size="small" onClick={() => handleEdit(doc)} sx={{ color: 'var(--accent-blue)' }}><Edit fontSize="small" /></IconButton>
+                      <IconButton size="small" onClick={() => handleDelete(doc.id)} sx={{ color: 'var(--delete-icon)' }}><Delete fontSize="small" /></IconButton>
+                    </Box>
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+          {documents.length === 0 && (
+            <Typography variant="body2" sx={{ textAlign: 'center', color: 'var(--text-muted)', mt: 4 }}>No documents found</Typography>
+          )}
+        </Box>
+      </Card>
+      
+    </Box>
   );
 };
 
