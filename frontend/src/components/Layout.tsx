@@ -182,11 +182,12 @@ const Layout: React.FC = () => {
             </IconButton>
             <Box component="img" src="/company-logo.png" sx={{ height: 32, mr: 1.5 }} alt="Logo" />
             <Typography variant="h6" noWrap component="div" sx={{ color: colors.headerText, fontWeight: 500 }}>
-              CFM Asset ReConstruction
+              Asset Reconstruction Private Limited
             </Typography>
           </Box>
           
           <Box sx={{ display: 'flex', alignItems: 'center', borderLeft: '1px solid var(--header-border)', pl: 3, ml: 2, height: 64 }}>
+            <Typography variant="body2" sx={{ color: 'var(--text-muted)', mr: 1.5, display: { xs: 'none', sm: 'block' } }}>Welcome,</Typography>
             <Avatar src="/default-avatar.png" sx={{ width: 32, height: 32, mr: 1.5, bgcolor: colors.accentLime }}>
               {userName.charAt(0)}
             </Avatar>

@@ -168,10 +168,8 @@ const Dashboard: React.FC = () => {
           </Box>
           <Box sx={{ p: 2, flex: 1, overflowY: 'auto' }}>
             <Grid container spacing={2}>
-              <QuickAction icon={<Business sx={{ color: '#2E6CD1', fontSize: 24 }} />} label="Admin" onClick={() => navigate('/admin')} />
               <QuickAction icon={<Description sx={{ color: '#F48B29', fontSize: 24 }} />} label="Docs" onClick={() => navigate('/documents/default')} />
               <QuickAction icon={<AddCircle sx={{ color: '#5CC665', fontSize: 24 }} />} label="Add" onClick={() => navigate('/admin')} />
-              <QuickAction icon={<Search sx={{ color: '#EA45A2', fontSize: 24 }} />} label="Search" onClick={() => navigate('/documents/default')} />
               <QuickAction icon={<Help sx={{ color: '#7B3ED6', fontSize: 24 }} />} label="FAQs" onClick={() => navigate('/documents/faqs')} />
               <QuickAction icon={<Assessment sx={{ color: '#FCE300', fontSize: 24 }} />} label="Report" onClick={() => {}} />
             </Grid>

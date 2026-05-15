@@ -141,7 +141,7 @@ const Documents: React.FC = () => {
           {React.cloneElement(config.icon as React.ReactElement, { fontSize: 'large' })}
         </Box>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 600, color: 'var(--text-primary)', mb: 0.5 }}>
+          <Typography variant="h5" sx={{ fontWeight: 500, color: 'var(--text-primary)', mb: 0.5 }}>
             {getPageTitle()}
           </Typography>
           <Typography variant="body1" sx={{ color: 'var(--text-secondary)' }}>
