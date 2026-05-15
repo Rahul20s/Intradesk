@@ -12,7 +12,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useMsal } from '@azure/msal-react';
 
-const drawerWidth = 260;
+const drawerWidth = 235;
 
 const colors = {
   sidebarBg: 'var(--sidebar-bg)',
@@ -80,7 +80,7 @@ const Layout: React.FC = () => {
         display: 'flex', justifyContent: 'center', alignItems: 'center', height: 64,
         background: colors.accentLime, color: '#ffffff'
       }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, letterSpacing: 1 }}>DASHBOARD</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 600, letterSpacing: 1 }}>INTRADESK</Typography>
       </Box>
 
       {/* Sidebar Search Bar */}
@@ -107,7 +107,7 @@ const Layout: React.FC = () => {
                   selected={isActive}
                   onClick={() => item.children ? handleMenuClick(item.text) : navigate(item.path)}
                   sx={{
-                    px: 3, py: 1.5,
+                    px: 3, py: 1,
                     color: isActive ? colors.activeItemText : colors.inactiveItemText,
                     '&.Mui-selected': {
                       backgroundColor: 'transparent', 
@@ -122,7 +122,7 @@ const Layout: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText 
                     primary={item.text}
-                    sx={{ '& .MuiListItemText-primary': { fontSize: '0.9rem', fontWeight: isActive ? 500 : 400 } }}
+                    sx={{ '& .MuiListItemText-primary': { fontSize: '0.85rem', fontWeight: isActive ? 500 : 400 } }}
                   />
                   {item.children ? (openMenus[item.text] ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />) : null}
                 </ListItemButton>
@@ -138,7 +138,7 @@ const Layout: React.FC = () => {
                           selected={isChildActive}
                           onClick={() => navigate(child.path)}
                           sx={{
-                            pl: 7, pr: 3, py: 1,
+                            pl: 7, pr: 3, py: 0.5,
                             color: isChildActive ? colors.activeItemText : colors.inactiveItemText,
                             '&.Mui-selected': {
                               backgroundColor: 'transparent',
@@ -149,7 +149,7 @@ const Layout: React.FC = () => {
                         >
                           <ListItemText 
                             primary={child.text} 
-                            sx={{ '& .MuiListItemText-primary': { fontSize: '0.8rem', fontWeight: isChildActive ? 500 : 400 } }}
+                            sx={{ '& .MuiListItemText-primary': { fontSize: '0.75rem', fontWeight: isChildActive ? 500 : 400 } }}
                           />
                         </ListItemButton>
                       )
@@ -180,8 +180,9 @@ const Layout: React.FC = () => {
             <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { sm: 'none' }, color: colors.headerText }}>
               <MenuIcon />
             </IconButton>
+            <Box component="img" src="/company-logo.png" sx={{ height: 32, mr: 1.5 }} alt="Logo" />
             <Typography variant="h6" noWrap component="div" sx={{ color: colors.headerText, fontWeight: 500 }}>
-              Intradesk-Knowledge Portal
+              CFM Asset ReConstruction
             </Typography>
           </Box>
           
