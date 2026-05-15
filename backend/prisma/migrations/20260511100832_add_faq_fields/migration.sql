@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "documents" ADD COLUMN     "answer" TEXT,
+ADD COLUMN     "question" TEXT,
+ALTER COLUMN "fileName" DROP NOT NULL,
+ALTER COLUMN "filePath" DROP NOT NULL,
+ALTER COLUMN "fileSize" DROP NOT NULL,
+ALTER COLUMN "mimeType" DROP NOT NULL;

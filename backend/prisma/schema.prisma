@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  department  String?
+  role        Role     @default(USER)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  documents   Document[]
+
+  @@map("users")
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  title       String
+  category    Category
+  department  String
+  fileName    String?
+  filePath    String?
+  fileSize    Int?
+  mimeType    String?
+  question    String?
+  answer      String?
+  uploadedBy  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  uploader    User?    @relation(fields: [uploadedBy], references: [id])
+
+  @@map("documents")
+  @@index([category])
+  @@index([department])
+  @@index([title])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Category {
+  POLICIES
+  SOPS
+  TEMPLATES
+  FAQS
+}
