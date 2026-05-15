@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Container, Typography, Button, Box, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, Grid, Card, CardContent
+  Typography, Button, Box, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Paper, Grid, Card, CardContent,
+  Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Divider
 } from '@mui/material';
-import { Download, Description, LibraryBooks, Article, Help, MenuBook, ArrowBack } from '@mui/icons-material';
+import { Download, Description, LibraryBooks, Article, Help, MenuBook, Close, QuestionAnswer } from '@mui/icons-material';
 import api from '../services/api';
 
 interface Document {
@@ -24,6 +25,7 @@ const Documents: React.FC = () => {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedFaq, setSelectedFaq] = useState<Document | null>(null);
 
   // Format date function
   const formatDate = (dateString: string): string => {
@@ -127,8 +129,10 @@ const Documents: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
+    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', pt: 2, px: 3 }}>
+      
+      {/* Header Box */}
+      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', flexShrink: 0 }}>
         <Box sx={{ 
           width: 56, height: 56, borderRadius: 3, mr: 3,
           backgroundColor: `var(--icon-bg-${config.color})`, color: `var(--icon-text-${config.color})`,
@@ -146,74 +150,130 @@ const Documents: React.FC = () => {
         </Box>
       </Box>
 
-      {loading ? (
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Typography variant="h6" color="var(--text-secondary)">Loading documents...</Typography>
-        </Box>
-      ) : uniqueFilteredDocuments.length === 0 ? (
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Typography variant="h6" color="var(--text-secondary)">No documents found in this category.</Typography>
-        </Box>
-      ) : category?.toUpperCase() === 'FAQS' ? (
-        <Grid container spacing={3}>
-          {uniqueFilteredDocuments.map((document) => (
-            <Grid item xs={12} md={8} key={document.id}>
-              <Card sx={{ background: 'var(--card-bg-white)', borderColor: 'var(--card-border)', borderWidth: 1, borderStyle: 'solid', borderRadius: 2 }}>
-                <CardContent sx={{ p: 3 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'var(--text-primary)' }}>
-                    Q: {document.question}
-                  </Typography>
-                  <Typography variant="body1" sx={{ lineHeight: 1.6, color: 'var(--text-secondary)' }}>
-                    A: {document.answer}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, background: 'var(--card-bg-white)', border: `1px solid var(--card-border)`, boxShadow: 'none' }}>
-          <Table sx={{ minWidth: 650 }}>
-            <TableHead>
-              <TableRow sx={{ background: 'var(--table-header-bg)' }}>
-                <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Sr No.</TableCell>
-                <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Title</TableCell>
-                <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Department</TableCell>
-                <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Uploaded On</TableCell>
-                <TableCell align="right" sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {uniqueFilteredDocuments.map((document, index) => (
-                <TableRow key={document.id} sx={{ '&:hover': { bgcolor: 'var(--table-row-hover)' } }}>
-                  <TableCell sx={{ color: 'var(--text-primary)', borderBottom: `1px solid var(--card-border)` }}>{index + 1}</TableCell>
-                  <TableCell sx={{ borderBottom: `1px solid var(--card-border)` }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500, color: 'var(--text-primary)' }}>
-                      {document.title}
+      {/* Content Area */}
+      <Box sx={{ flex: 1, overflowY: 'auto', pb: 4, pr: 1 }}>
+        {loading ? (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h6" color="var(--text-secondary)">Loading documents...</Typography>
+          </Box>
+        ) : uniqueFilteredDocuments.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h6" color="var(--text-secondary)">No documents found in this category.</Typography>
+          </Box>
+        ) : category?.toUpperCase() === 'FAQS' ? (
+          <Grid container spacing={2}>
+            {uniqueFilteredDocuments.map((document) => (
+              <Grid item xs={12} md={6} lg={4} key={document.id}>
+                <Card 
+                  onClick={() => setSelectedFaq(document)}
+                  sx={{ 
+                    cursor: 'pointer',
+                    background: 'var(--card-bg-white)', 
+                    borderTop: '4px solid var(--accent-orange)', 
+                    borderBottom: '1px solid var(--card-border)',
+                    borderLeft: '1px solid var(--card-border)',
+                    borderRight: '1px solid var(--card-border)',
+                    borderRadius: 2,
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                    }
+                  }}
+                >
+                  <CardContent sx={{ p: 2, pb: '16px !important', display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                    <QuestionAnswer sx={{ color: 'var(--accent-orange)', mt: 0.5 }} />
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.4 }}>
+                      {document.question}
                     </Typography>
-                  </TableCell>
-                  <TableCell sx={{ borderBottom: `1px solid var(--card-border)` }}>
-                    <Typography variant="caption" sx={{ px: 1.5, py: 0.5, borderRadius: 1, backgroundColor: 'var(--icon-bg-blue)', color: 'var(--icon-text-blue)' }}>
-                      {document.department}
-                    </Typography>
-                  </TableCell>
-                  <TableCell sx={{ color: 'var(--text-secondary)', borderBottom: `1px solid var(--card-border)` }}>{formatDate(document.createdAt)}</TableCell>
-                  <TableCell align="right" sx={{ borderBottom: `1px solid var(--card-border)` }}>
-                    <Button size="small" variant="contained" startIcon={<Download />} onClick={() => handleDownload(document)}
-                      sx={{
-                        background: 'var(--btn-action-bg)', color: 'var(--btn-action-text)',
-                        '&:hover': { background: 'var(--btn-action-hover)' }, boxShadow: 'none'
-                      }}>
-                      Download
-                    </Button>
-                  </TableCell>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <TableContainer component={Paper} sx={{ borderRadius: 2, background: 'var(--card-bg-white)', border: `1px solid var(--card-border)`, boxShadow: 'none' }}>
+            <Table sx={{ minWidth: 650 }}>
+              <TableHead>
+                <TableRow sx={{ background: 'var(--table-header-bg)' }}>
+                  <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Sr No.</TableCell>
+                  <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Title</TableCell>
+                  <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Department</TableCell>
+                  <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Uploaded On</TableCell>
+                  <TableCell align="right" sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Action</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </Container>
+              </TableHead>
+              <TableBody>
+                {uniqueFilteredDocuments.map((document, index) => (
+                  <TableRow key={document.id} sx={{ '&:hover': { bgcolor: 'var(--table-row-hover)' } }}>
+                    <TableCell sx={{ color: 'var(--text-primary)', borderBottom: `1px solid var(--card-border)` }}>{index + 1}</TableCell>
+                    <TableCell sx={{ borderBottom: `1px solid var(--card-border)` }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: 'var(--text-primary)' }}>
+                        {document.title}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ borderBottom: `1px solid var(--card-border)` }}>
+                      <Typography variant="caption" sx={{ px: 1.5, py: 0.5, borderRadius: 1, backgroundColor: 'var(--icon-bg-blue)', color: 'var(--icon-text-blue)' }}>
+                        {document.department}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ color: 'var(--text-secondary)', borderBottom: `1px solid var(--card-border)` }}>{formatDate(document.createdAt)}</TableCell>
+                    <TableCell align="right" sx={{ borderBottom: `1px solid var(--card-border)` }}>
+                      <Button size="small" variant="contained" startIcon={<Download />} onClick={() => handleDownload(document)}
+                        sx={{
+                          background: 'var(--btn-action-bg)', color: 'var(--btn-action-text)',
+                          '&:hover': { background: 'var(--btn-action-hover)' }, boxShadow: 'none'
+                        }}>
+                        Download
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </Box>
+
+      {/* FAQ Modal Popup */}
+      <Dialog 
+        open={Boolean(selectedFaq)} 
+        onClose={() => setSelectedFaq(null)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 3, borderTop: '6px solid var(--accent-orange)' } }}
+      >
+        {selectedFaq && (
+          <>
+            <DialogTitle sx={{ pb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+                <Help sx={{ color: 'var(--accent-orange)', mt: 0.5 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.3 }}>
+                  {selectedFaq.question}
+                </Typography>
+              </Box>
+              <IconButton onClick={() => setSelectedFaq(null)} size="small" sx={{ ml: 2, mt: -0.5 }}>
+                <Close />
+              </IconButton>
+            </DialogTitle>
+            <Divider />
+            <DialogContent sx={{ pt: 3, pb: 3, minHeight: 120 }}>
+              <Typography variant="body1" sx={{ lineHeight: 1.7, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
+                {selectedFaq.answer}
+              </Typography>
+            </DialogContent>
+            <DialogActions sx={{ p: 2, pt: 0 }}>
+              <Button onClick={() => setSelectedFaq(null)} variant="outlined" sx={{ color: 'var(--accent-orange)', borderColor: 'var(--accent-orange)' }}>
+                Close
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+    </Box>
   );
 };
 
