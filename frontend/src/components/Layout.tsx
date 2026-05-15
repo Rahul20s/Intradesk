@@ -182,7 +182,7 @@ const Layout: React.FC = () => {
             </IconButton>
             <Box component="img" src="/company-logo.png" sx={{ height: 32, mr: 1.5 }} alt="Logo" />
             <Typography variant="h6" noWrap component="div" sx={{ color: colors.headerText, fontWeight: 500 }}>
-              Asset Reconstruction Private Limited
+              CFM Asset Reconstruction Private Limited
             </Typography>
           </Box>
           

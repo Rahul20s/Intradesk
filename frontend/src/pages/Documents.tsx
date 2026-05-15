@@ -134,17 +134,17 @@ const Documents: React.FC = () => {
       {/* Header Box */}
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', flexShrink: 0 }}>
         <Box sx={{ 
-          width: 56, height: 56, borderRadius: 3, mr: 3,
+          width: 48, height: 48, borderRadius: 2, mr: 2,
           backgroundColor: `var(--icon-bg-${config.color})`, color: `var(--icon-text-${config.color})`,
           display: 'flex', alignItems: 'center', justifyContent: 'center'
         }}>
-          {React.cloneElement(config.icon as React.ReactElement, { fontSize: 'large' })}
+          {React.cloneElement(config.icon as React.ReactElement, { fontSize: 'medium' })}
         </Box>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 500, color: 'var(--text-primary)', mb: 0.5 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: 'var(--text-primary)', mb: 0.25 }}>
             {getPageTitle()}
           </Typography>
-          <Typography variant="body1" sx={{ color: 'var(--text-secondary)' }}>
+          <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
             {config.desc}
           </Typography>
         </Box>
