@@ -1,69 +1,85 @@
 :root {
-  --sidebar-bg:         #EEF4FB;
-  --sidebar-active-bg:  #D4E8F8;
-  --sidebar-active-border: #378ADD;
-  --sidebar-text:       #185FA5;
-  --sidebar-active-text:#042C53;
-  --sidebar-label:      #378ADD;
+  --page-bg:            #111111;
+  --sidebar-bg:         #0d0d0d;
+  --header-bg:          #0d0d0d;
+  
+  --sidebar-active-bg:  #161616;
+  --sidebar-active-border: #5DCAA5;
+  --sidebar-text:       #888888;
+  --sidebar-active-text:#ffffff;
+  --sidebar-label:      #555555;
 
-  --header-bg:          #378ADD;
   --header-text:        #ffffff;
-  --header-border:      rgba(255,255,255,0.5);
+  --header-border:      #333333;
 
-  --page-bg:            #FAFCFF;
-  --card-bg-blue:       #E6F1FB;
-  --card-bg-mint:       #E1F5EE;
-  --card-bg-white:      #ffffff;
-  --card-border:        #c8dff4;
+  --card-bg-white:      #161616;
+  --card-bg-blue:       #161616;
+  --card-bg-mint:       #161616;
+  --card-border:        #222222;
 
-  --text-primary:       #042C53;
-  --text-secondary:     #7aaed4;
-  --text-muted:         #b0cce6;
+  --text-primary:       #f5f5f5;
+  --text-secondary:     #a3a3a3;
+  --text-muted:         #666666;
 
-  --label-blue:         #185FA5;
-  --label-mint:         #0F6E56;
-  --number-blue:        #042C53;
-  --number-mint:        #04342C;
-  --trend-blue:         #378ADD;
-  --trend-mint:         #1D9E75;
-  --trend-empty:        #cccccc;
+  --label-blue:         #a3a3a3;
+  --label-mint:         #5DCAA5;
+  --number-blue:        #ffffff;
+  --number-mint:        #ffffff;
+  --trend-blue:         #5DCAA5;
+  --trend-mint:         #5DCAA5;
+  --trend-empty:        #333333;
 
-  --btn-primary-bg:     #378ADD;
-  --btn-primary-text:   #ffffff;
-  --btn-primary-hover:  #185FA5;
-  --btn-action-bg:      #1D9E75;
-  --btn-action-text:    #E1F5EE;
-  --btn-action-hover:   #0F6E56;
+  --btn-primary-bg:     #5DCAA5;
+  --btn-primary-text:   #0d0d0d;
+  --btn-primary-hover:  #4bb894;
+  --btn-action-bg:      #1a1a1a;
+  --btn-action-text:    #ffffff;
+  --btn-action-hover:   #222222;
 
-  --input-bg:           #ffffff;
-  --input-border:       #c8dff4;
-  --input-focus-border: #378ADD;
-  --input-focus-shadow: rgba(55,138,221,0.12);
-  --placeholder:        #7aaed4;
+  --input-bg:           #0d0d0d;
+  --input-border:       #333333;
+  --input-focus-border: #5DCAA5;
+  --input-focus-shadow: rgba(93, 202, 165, 0.12);
+  --placeholder:        #666666;
 
-  --tag-sops-bg:        #E1F5EE;
-  --tag-sops-text:      #085041;
-  --tag-policies-bg:    #E6F1FB;
-  --tag-policies-text:  #0C447C;
-  --tag-templates-bg:   #FEF9E7;
-  --tag-templates-text: #7D5A00;
-  --tag-faqs-bg:        #FEF0F0;
-  --tag-faqs-text:      #7A1F1F;
-  --tag-hr-bg:          #E1F5EE;
-  --tag-hr-text:        #085041;
-  --tag-it-bg:          #E6F1FB;
-  --tag-it-text:        #0C447C;
-  --tag-finance-bg:     #FEF9E7;
-  --tag-finance-text:   #7D5A00;
-  --tag-admin-bg:       #F3F3F3;
-  --tag-admin-text:     #444441;
+  /* Dark Tinted Icon Boxes */
+  --icon-bg-teal:       #0f2e26;
+  --icon-text-teal:     #5DCAA5;
+  --icon-bg-blue:       #0d243a;
+  --icon-text-blue:     #4aa1f3;
+  --icon-bg-amber:      #332200;
+  --icon-text-amber:    #f5a623;
+  --icon-bg-red:        #2a0f0f;
+  --icon-text-red:      #e24b4a;
+  --icon-bg-purple:     #1e1133;
+  --icon-text-purple:   #9b6cfa;
 
-  --table-header-bg:    #E6F1FB;
-  --table-header-text:  #185FA5;
-  --table-row-border:   #c8dff4;
-  --table-row-hover:    #F0F7FF;
+  --tag-sops-bg:        #0f2e26;
+  --tag-sops-text:      #5DCAA5;
+  --tag-policies-bg:    #0d243a;
+  --tag-policies-text:  #4aa1f3;
+  --tag-templates-bg:   #332200;
+  --tag-templates-text: #f5a623;
+  --tag-faqs-bg:        #2a0f0f;
+  --tag-faqs-text:      #e24b4a;
+  --tag-guidelines-bg:  #1e1133;
+  --tag-guidelines-text:#9b6cfa;
+  
+  --tag-hr-bg:          #0f2e26;
+  --tag-hr-text:        #5DCAA5;
+  --tag-it-bg:          #0d243a;
+  --tag-it-text:        #4aa1f3;
+  --tag-finance-bg:     #332200;
+  --tag-finance-text:   #f5a623;
+  --tag-admin-bg:       #222222;
+  --tag-admin-text:     #aaaaaa;
 
-  --edit-icon:          #185FA5;
-  --delete-icon:        #E24B4A;
-  --divider:            #c8dff4;
+  --table-header-bg:    #161616;
+  --table-header-text:  #a3a3a3;
+  --table-row-border:   #222222;
+  --table-row-hover:    #1c1c1c;
+
+  --edit-icon:          #4aa1f3;
+  --delete-icon:        #e24b4a;
+  --divider:            #222222;
 }
