@@ -193,7 +193,6 @@ const Layout: React.FC = () => {
             </Avatar>
             <Box>
               <Typography variant="body2" sx={{ color: '#ffffff', fontWeight: 600, lineHeight: 1.2 }}>{userName}</Typography>
-              <Typography variant="caption" sx={{ color: '#8a959e' }}>Admin</Typography>
             </Box>
           </Box>
         </Toolbar>
