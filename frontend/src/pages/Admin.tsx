@@ -50,6 +50,7 @@ const Admin: React.FC = () => {
   });
   const [documents, setDocuments] = useState<Document[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState({
     title: '',
@@ -96,6 +97,24 @@ const Admin: React.FC = () => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setFormData({ ...formData, file: event.target.files[0] });
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setFormData({ ...formData, file: e.dataTransfer.files[0] });
     }
   };
 
@@ -250,13 +269,34 @@ const Admin: React.FC = () => {
                 <TextField fullWidth label="Answer" value={formData.answer} onChange={handleInputChange('answer')} margin="normal" required multiline rows={4} size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
               </>
             ) : (
-              <>
-                <Button variant="outlined" component="label" fullWidth sx={{ mt: 1, mb: 2, borderColor: 'var(--accent-blue)', color: 'var(--accent-blue)' }} startIcon={<CloudUpload />}>
-                  Choose File
-                  <input type="file" hidden onChange={handleFileChange} accept=".pdf,.doc,.docx,.xls,.xlsx" />
-                </Button>
-                {formData.file && <Alert severity="info" sx={{ mb: 2, py: 0, '& .MuiAlert-message': { fontSize: '0.8rem' } }}>Selected: {formData.file.name}</Alert>}
-              </>
+              <Box
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                component="label"
+                sx={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  mt: 1, mb: 2, p: 3, border: '2px dashed', 
+                  borderColor: isDragging ? 'var(--accent-blue)' : 'var(--input-border)',
+                  backgroundColor: isDragging ? 'rgba(46, 108, 209, 0.05)' : 'var(--input-bg)',
+                  borderRadius: 2, textAlign: 'center', cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  '&:hover': { borderColor: 'var(--accent-blue)' }
+                }}
+              >
+                <CloudUpload sx={{ fontSize: 32, color: isDragging ? 'var(--accent-blue)' : 'var(--text-muted)', mb: 1 }} />
+                <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontWeight: 500, mb: 0.5 }}>
+                  {isDragging ? 'Drop file here' : 'Drag & drop your file here'}
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'var(--text-muted)' }}>
+                  or click to browse
+                </Typography>
+                <input type="file" hidden onChange={handleFileChange} accept=".pdf,.doc,.docx,.xls,.xlsx" />
+              </Box>
+            )}
+
+            {formData.category !== 'FAQs' && formData.file && (
+               <Alert severity="info" sx={{ mb: 2, py: 0, '& .MuiAlert-message': { fontSize: '0.8rem' } }}>Selected: {formData.file.name}</Alert>
             )}
 
             <Button type="submit" variant="contained" fullWidth disabled={uploading || !formData.title || !formData.category || !formData.department || (formData.category === 'FAQs' ? (!formData.question || !formData.answer) : !formData.file)} sx={{ background: 'var(--btn-primary-bg)', color: '#fff', mt: 2 }}>
