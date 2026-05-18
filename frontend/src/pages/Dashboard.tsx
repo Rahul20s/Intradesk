@@ -4,7 +4,7 @@ import {
   Card, Typography, Box, Divider, Avatar, IconButton, LinearProgress, Grid
 } from '@mui/material';
 import { 
-  Description, Business, FileCopy, AddCircle, Search, Help, Assessment, Star
+  Description, Business, FileCopy, Help, Star
 } from '@mui/icons-material';
 import api from '../services/api';
 

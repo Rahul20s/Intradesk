@@ -13,8 +13,7 @@ import {
   Box,
   Alert,
   Chip,
-  IconButton,
-  Divider
+  IconButton
 } from '@mui/material';
 import { CloudUpload, Delete, Edit } from '@mui/icons-material';
 import api from '../services/api';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   Typography, Button, Box, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, Grid, Card, CardContent,
@@ -22,7 +22,6 @@ interface Document {
 
 const Documents: React.FC = () => {
   const { category, department } = useParams<{ category: string, department?: string }>();
-  const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedFaq, setSelectedFaq] = useState<Document | null>(null);
