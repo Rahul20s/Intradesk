@@ -2,9 +2,7 @@ import express from 'express';
 import { PrismaClient, Category } from '@prisma/client';
 import multer from 'multer';
 import path from 'path';
-import { S3Client, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import multerS3 from 'multer-s3';
-import { Readable } from 'stream';
+import { BlobServiceClient } from '@azure/storage-blob';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -35,26 +33,16 @@ const getContentType = (filename: string): string => {
   return mimeTypes[ext] || 'application/octet-stream';
 };
 
-// S3 Configuration for Backblaze B2
-const s3 = new S3Client({
-  region: process.env.B2_REGION || 'us-east-005',
-  endpoint: process.env.B2_ENDPOINT || '',
-  credentials: {
-    accessKeyId: process.env.B2_KEY_ID || '',
-    secretAccessKey: process.env.B2_APPLICATION_KEY || '',
-  },
-});
+// Azure Blob Storage Configuration
+const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING || '');
+const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_STORAGE_CONTAINER || '');
 
-// Configure multer for file uploads directly to S3
+// Ensure container exists on startup (optional but good practice)
+containerClient.createIfNotExists().catch(console.error);
+
+// Configure multer for memory storage (we upload to Azure inside the route)
 const upload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: process.env.B2_BUCKET || '',
-    key: function (req: express.Request, file: Express.Multer.File, cb: (error: any, key?: string) => void) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-  }),
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB limit
   },
@@ -201,13 +189,26 @@ router.post('/', upload.single('file'), async (req, res) => {
       });
     }
 
+    let filePath: string | null = null;
+
+    if (file) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const blobName = file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname);
+      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+      await blockBlobClient.uploadData(file.buffer, {
+        blobHTTPHeaders: { blobContentType: file.mimetype }
+      });
+      filePath = blobName;
+    }
+
     const document = await prisma.document.create({
       data: {
         title,
         category: (category as string).toUpperCase() as Category,
         department,
         fileName: file ? file.originalname : null,
-        filePath: file ? (file as any).key : null,
+        filePath,
         fileSize: file ? file.size : null,
         mimeType: file ? file.mimetype : null,
         question: isFAQ ? question : null,
@@ -238,25 +239,23 @@ router.get('/:id/view', async (req, res) => {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    const command = new GetObjectCommand({
-      Bucket: process.env.B2_BUCKET || '',
-      Key: document.filePath,
-    });
+    const blockBlobClient = containerClient.getBlockBlobClient(document.filePath);
     
-    try {
-      const response = await s3.send(command);
-      res.setHeader('Content-Type', getContentType(document.fileName || ''));
-      res.setHeader('Content-Disposition', `inline; filename="${document.fileName || 'document'}"`);
-      if (response.Body instanceof Readable) {
-        response.Body.pipe(res);
-      } else {
-        res.status(500).json({ error: 'Failed to stream document' });
-      }
-    } catch (s3Error) {
-      console.error(s3Error);
+    if (!(await blockBlobClient.exists())) {
       return res.status(404).json({ error: 'File not found in storage' });
     }
+
+    const downloadBlockBlobResponse = await blockBlobClient.download(0);
+    res.setHeader('Content-Type', getContentType(document.fileName || ''));
+    res.setHeader('Content-Disposition', `inline; filename="${document.fileName || 'document'}"`);
+    
+    if (downloadBlockBlobResponse.readableStreamBody) {
+      downloadBlockBlobResponse.readableStreamBody.pipe(res);
+    } else {
+      res.status(500).json({ error: 'Failed to stream document' });
+    }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Failed to view document' });
   }
 });
@@ -274,25 +273,23 @@ router.get('/:id/download', async (req, res) => {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    const command = new GetObjectCommand({
-      Bucket: process.env.B2_BUCKET || '',
-      Key: document.filePath,
-    });
+    const blockBlobClient = containerClient.getBlockBlobClient(document.filePath);
     
-    try {
-      const response = await s3.send(command);
-      res.setHeader('Content-Type', getContentType(document.fileName || ''));
-      res.setHeader('Content-Disposition', `attachment; filename="${document.fileName || 'document'}"`);
-      if (response.Body instanceof Readable) {
-        response.Body.pipe(res);
-      } else {
-        res.status(500).json({ error: 'Failed to stream document' });
-      }
-    } catch (s3Error) {
-      console.error(s3Error);
+    if (!(await blockBlobClient.exists())) {
       return res.status(404).json({ error: 'File not found in storage' });
     }
+
+    const downloadBlockBlobResponse = await blockBlobClient.download(0);
+    res.setHeader('Content-Type', getContentType(document.fileName || ''));
+    res.setHeader('Content-Disposition', `attachment; filename="${document.fileName || 'document'}"`);
+    
+    if (downloadBlockBlobResponse.readableStreamBody) {
+      downloadBlockBlobResponse.readableStreamBody.pipe(res);
+    } else {
+      res.status(500).json({ error: 'Failed to stream document' });
+    }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Failed to download document' });
   }
 });
@@ -311,15 +308,8 @@ router.delete('/:id', async (req, res) => {
     }
 
     if (document.filePath) {
-      const command = new DeleteObjectCommand({
-        Bucket: process.env.B2_BUCKET || '',
-        Key: document.filePath,
-      });
-      try {
-        await s3.send(command);
-      } catch (s3Error) {
-        console.error('Failed to delete from S3:', s3Error);
-      }
+      const blockBlobClient = containerClient.getBlockBlobClient(document.filePath);
+      await blockBlobClient.deleteIfExists();
     }
 
     // Delete database record
@@ -332,6 +322,7 @@ router.delete('/:id', async (req, res) => {
 
     res.json({ message: 'Document deleted successfully' });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Failed to delete document' });
   }
 });
