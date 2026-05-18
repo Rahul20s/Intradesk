@@ -51,8 +51,6 @@ const Dashboard: React.FC = () => {
         {/* Banner (50% width) */}
         <Card sx={{ flex: 2, backgroundImage: 'url(/banner.png)', backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: 0, position: 'relative' }}>
           <Box sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%', p: 3, background: 'linear-gradient(transparent, rgba(0,0,0,0.8))' }}>
-            <Typography variant="h4" sx={{ color: '#fff', fontWeight: 300 }}>Company Portal</Typography>
-            <Typography variant="body2" sx={{ color: '#ccc' }}>Streamlining internal knowledge.</Typography>
           </Box>
         </Card>
 
