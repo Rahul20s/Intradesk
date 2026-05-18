@@ -9,13 +9,17 @@ import {
 } from '@mui/material';
 import { loginRequest } from '../services/authConfig';
 import { Login as LoginIcon } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const { instance } = useMsal();
 
+  const navigate = useNavigate();
+
   const handleLogin = async () => {
     try {
-      await instance.loginRedirect(loginRequest);
+      await instance.loginPopup(loginRequest);
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
     }
