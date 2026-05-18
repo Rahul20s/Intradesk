@@ -35,7 +35,9 @@ const Layout: React.FC = () => {
   const { instance, accounts } = useMsal();
   
   const userName = accounts.length > 0 && accounts[0].name ? accounts[0].name.split(' ')[0] : 'Admin';
-  const isAdmin = () => accounts.length > 0 && accounts[0].username.toLowerCase() === 'rahul.sharma@cfmarc.in';
+  const isAdmin = () => accounts.length > 0 && 
+    (accounts[0].username.toLowerCase() === 'rahul.sharma@cfmarc.in' ||
+     accounts[0].username.toLowerCase() === 'akash.yadav@cfmarc.in');
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
