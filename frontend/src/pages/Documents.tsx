@@ -122,10 +122,30 @@ const Documents: React.FC = () => {
   };
 
   const getPageTitle = () => {
-    let title = category ? `${category.charAt(0).toUpperCase()}${category.slice(1)}` : 'Documents';
-    if (title === 'Templates') title = 'Forms & Templates';
-    if (department) title = `${department.toUpperCase()} ${title}`;
-    return title;
+    let catTitle = '';
+    if (!category || category === 'default') {
+      catTitle = 'Documents';
+    } else {
+      const lowerCat = category.toLowerCase();
+      if (lowerCat === 'sops') catTitle = "SOPs";
+      else if (lowerCat === 'faqs') catTitle = "FAQs";
+      else if (lowerCat === 'templates') catTitle = 'Forms & Templates';
+      else catTitle = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+    }
+    
+    let depTitle = '';
+    if (department) {
+       if (department.toUpperCase() === 'HR' || department.toUpperCase() === 'IT' || department.toUpperCase() === 'LMS') {
+           depTitle = department.toUpperCase();
+       } else {
+           depTitle = department.charAt(0).toUpperCase() + department.slice(1).toLowerCase();
+       }
+    }
+
+    if (depTitle) {
+      return `${depTitle} ${catTitle}`;
+    }
+    return catTitle;
   };
 
   return (
@@ -198,12 +218,12 @@ const Documents: React.FC = () => {
           <TableContainer component={Paper} sx={{ borderRadius: 2, background: 'var(--card-bg-white)', border: `1px solid var(--card-border)`, boxShadow: 'none' }}>
             <Table sx={{ minWidth: 650 }}>
               <TableHead>
-                <TableRow sx={{ background: 'var(--table-header-bg)' }}>
-                  <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Sr No.</TableCell>
-                  <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Title</TableCell>
-                  <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Department</TableCell>
-                  <TableCell sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Uploaded On</TableCell>
-                  <TableCell align="right" sx={{ color: 'var(--table-header-text)', fontWeight: 600, borderBottom: `1px solid var(--card-border)` }}>Action</TableCell>
+                <TableRow sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                  <TableCell sx={{ color: '#ffffff', fontWeight: 600, borderBottom: 'none' }}>Sr No.</TableCell>
+                  <TableCell sx={{ color: '#ffffff', fontWeight: 600, borderBottom: 'none' }}>Title</TableCell>
+                  <TableCell sx={{ color: '#ffffff', fontWeight: 600, borderBottom: 'none' }}>Department</TableCell>
+                  <TableCell sx={{ color: '#ffffff', fontWeight: 600, borderBottom: 'none' }}>Uploaded On</TableCell>
+                  <TableCell align="right" sx={{ color: '#ffffff', fontWeight: 600, borderBottom: 'none' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

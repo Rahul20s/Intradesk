@@ -33,7 +33,7 @@ interface Document {
 
 const CATEGORY_MAP: Record<string, string[]> = {
   'Policies': ['HR', 'IT', 'Company'],
-  'SOPs': ['LMS', 'Spine', 'SAP', 'General'],
+  'SOPs': ['LMS', 'General'],
   'Forms & Templates': ['General'],
   'FAQs': ['General'],
   'Guidelines': ['General']

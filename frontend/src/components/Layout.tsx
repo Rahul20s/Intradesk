@@ -65,8 +65,6 @@ const Layout: React.FC = () => {
       text: 'SOPs', path: '/documents/sops',
       children: [
         { text: 'LMS', path: '/documents/sops/LMS' },
-        { text: 'Spine', path: '/documents/sops/Spine' },
-        { text: 'SAP', path: '/documents/sops/SAP' },
         { text: 'General', path: '/documents/sops/General' },
       ]
     },
