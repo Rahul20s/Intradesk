@@ -67,6 +67,7 @@ const Layout: React.FC = () => {
         { text: 'LMS', path: '/documents/sops/LMS' },
         { text: 'Spine', path: '/documents/sops/Spine' },
         { text: 'SAP', path: '/documents/sops/SAP' },
+        { text: 'General', path: '/documents/sops/General' },
       ]
     },
     { text: 'Forms & Templates', path: '/documents/templates' },

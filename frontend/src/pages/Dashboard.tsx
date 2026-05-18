@@ -167,9 +167,7 @@ const Dashboard: React.FC = () => {
           <Box sx={{ p: 2, flex: 1, overflowY: 'auto' }}>
             <Grid container spacing={2}>
               <QuickAction icon={<Description sx={{ color: '#F48B29', fontSize: 24 }} />} label="Docs" onClick={() => navigate('/documents/default')} />
-              <QuickAction icon={<AddCircle sx={{ color: '#5CC665', fontSize: 24 }} />} label="Add" onClick={() => navigate('/admin')} />
               <QuickAction icon={<Help sx={{ color: '#7B3ED6', fontSize: 24 }} />} label="FAQs" onClick={() => navigate('/documents/faqs')} />
-              <QuickAction icon={<Assessment sx={{ color: '#FCE300', fontSize: 24 }} />} label="Report" onClick={() => {}} />
             </Grid>
           </Box>
         </Card>
@@ -207,7 +205,7 @@ const ListContent: React.FC<{ items: any[], emptyText: string, showAvatar: boole
 };
 
 const QuickAction: React.FC<{ icon: React.ReactNode, label: string, onClick: () => void }> = ({ icon, label, onClick }) => (
-  <Grid item xs={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }} onClick={onClick}>
+  <Grid item xs={6} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }} onClick={onClick}>
     <IconButton sx={{ backgroundColor: '#f9f9f9', mb: 0.5, width: 40, height: 40 }}>
       {icon}
     </IconButton>
