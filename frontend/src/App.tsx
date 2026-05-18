@@ -5,7 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import './styles/global.css';
 import { useIsAuthenticated, AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react';
 
-import SimpleLogin from './pages/SimpleLogin';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Documents from './pages/Documents';
 import Admin from './pages/Admin';
@@ -52,7 +52,7 @@ function App() {
                 <Navigate to="/dashboard" replace />
               </AuthenticatedTemplate>
               <UnauthenticatedTemplate>
-                <SimpleLogin />
+                <Login />
               </UnauthenticatedTemplate>
             </>
           } />
