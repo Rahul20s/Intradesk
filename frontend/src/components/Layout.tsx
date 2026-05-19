@@ -69,8 +69,8 @@ const Layout: React.FC = () => {
       ]
     },
     { text: 'Forms & Templates', path: '/documents/templates' },
-    { text: 'FAQs', path: '/documents/faqs' },
     { text: 'Guidelines', path: '/documents/guidelines' },
+    { text: 'FAQs', path: '/documents/faqs' },
     ...(isAdmin() ? [{ text: 'Admin Panel', path: '/admin' }] : []),
   ];
 

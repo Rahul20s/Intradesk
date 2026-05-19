@@ -18,8 +18,13 @@ const Login: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      await instance.loginPopup(loginRequest);
-      navigate('/dashboard');
+      // Use redirect on mobile to avoid popup blockers, popup on desktop
+      if (window.innerWidth <= 768 || /Mobi|Android/i.test(navigator.userAgent)) {
+        await instance.loginRedirect(loginRequest);
+      } else {
+        await instance.loginPopup(loginRequest);
+        navigate('/dashboard');
+      }
     } catch (error) {
       console.error('Login failed:', error);
     }

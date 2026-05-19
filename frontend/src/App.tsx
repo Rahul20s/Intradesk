@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import './styles/global.css';
-import { useIsAuthenticated, AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react';
+import { useIsAuthenticated, useMsal } from '@azure/msal-react';
+import { InteractionStatus } from '@azure/msal-browser';
+import { CircularProgress, Box } from '@mui/material';
 
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -29,9 +31,13 @@ const theme = createTheme({
   },
 });
 
-// Protected route component for authentication using MSAL
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isAuthenticated = useIsAuthenticated();
+  const { inProgress } = useMsal();
+  
+  if (inProgress !== InteractionStatus.None) {
+    return <Box sx={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}><CircularProgress /></Box>;
+  }
   
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -40,22 +46,29 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
+// Dedicated wrapper for the login route
+const LoginRouteWrapper: React.FC = () => {
+  const isAuthenticated = useIsAuthenticated();
+  const { inProgress } = useMsal();
+
+  if (inProgress !== InteractionStatus.None) {
+    return <Box sx={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}><CircularProgress /></Box>;
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Login />;
+};
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
         <Routes>
-          <Route path="/login" element={
-            <>
-              <AuthenticatedTemplate>
-                <Navigate to="/dashboard" replace />
-              </AuthenticatedTemplate>
-              <UnauthenticatedTemplate>
-                <Login />
-              </UnauthenticatedTemplate>
-            </>
-          } />
+          <Route path="/login" element={<LoginRouteWrapper />} />
           <Route path="/" element={
             <ProtectedRoute>
               <Layout />
