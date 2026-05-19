@@ -188,7 +188,7 @@ const Documents: React.FC = () => {
                   sx={{ 
                     cursor: 'pointer',
                     background: 'var(--card-bg-white)', 
-                    borderTop: '4px solid var(--accent-orange)', 
+                    borderTop: '4px solid #212a34', 
                     borderBottom: '1px solid var(--card-border)',
                     borderLeft: '1px solid var(--card-border)',
                     borderRight: '1px solid var(--card-border)',
@@ -204,7 +204,7 @@ const Documents: React.FC = () => {
                   }}
                 >
                   <CardContent sx={{ p: 2, pb: '16px !important', display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                    <QuestionAnswer sx={{ color: 'var(--accent-orange)', mt: 0.5 }} />
+                    <QuestionAnswer sx={{ color: '#212a34', mt: 0.5 }} />
                     <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.4 }}>
                       {document.question}
                     </Typography>
@@ -263,13 +263,13 @@ const Documents: React.FC = () => {
         onClose={() => setSelectedFaq(null)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3, borderTop: '6px solid var(--accent-orange)' } }}
+        PaperProps={{ sx: { borderRadius: 3, borderTop: '6px solid #212a34' } }}
       >
         {selectedFaq && (
           <>
             <DialogTitle sx={{ pb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
-                <Help sx={{ color: 'var(--accent-orange)', mt: 0.5 }} />
+                <Help sx={{ color: '#212a34', mt: 0.5 }} />
                 <Typography variant="h6" sx={{ fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.3 }}>
                   {selectedFaq.question}
                 </Typography>
@@ -285,7 +285,7 @@ const Documents: React.FC = () => {
               </Typography>
             </DialogContent>
             <DialogActions sx={{ p: 2, pt: 0 }}>
-              <Button onClick={() => setSelectedFaq(null)} variant="outlined" sx={{ color: 'var(--accent-orange)', borderColor: 'var(--accent-orange)' }}>
+              <Button onClick={() => setSelectedFaq(null)} variant="outlined" sx={{ color: '#212a34', borderColor: '#212a34' }}>
                 Close
               </Button>
             </DialogActions>

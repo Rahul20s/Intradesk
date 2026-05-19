@@ -107,7 +107,7 @@ const Login: React.FC = () => {
             xs={12} 
             md={6} 
             sx={{ 
-              background: 'linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%)',
+              background: '#212a34',
               color: '#ffffff',
               display: 'flex',
               flexDirection: 'column',
