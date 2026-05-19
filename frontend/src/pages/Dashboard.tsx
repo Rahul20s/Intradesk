@@ -44,12 +44,12 @@ const Dashboard: React.FC = () => {
   const recentDownloads = recentDocs.slice(4, 8); // Displaying recent from array
 
   return (
-    <Box sx={{ height: 'calc(100vh - 100px)', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box sx={{ height: { xs: 'auto', md: 'calc(100vh - 100px)' }, overflow: { xs: 'auto', md: 'hidden' }, display: 'flex', flexDirection: 'column', gap: 2 }}>
       
       {/* ROW 1 (45% height) */}
-      <Box sx={{ display: 'flex', gap: 2, flex: 4.5 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, flex: 4.5 }}>
         {/* Banner (50% width) */}
-        <Card sx={{ flex: 2, backgroundImage: 'url(/banner.png)', backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: 0, position: 'relative' }}>
+        <Card sx={{ flex: 2, minHeight: { xs: 200, md: 'auto' }, backgroundImage: 'url(/banner.png)', backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: 0, position: 'relative' }}>
           <Box sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%', p: 3, background: 'linear-gradient(transparent, rgba(0,0,0,0.8))' }}>
           </Box>
         </Card>
@@ -100,7 +100,7 @@ const Dashboard: React.FC = () => {
       </Box>
 
       {/* ROW 2 (55% height) */}
-      <Box sx={{ display: 'flex', gap: 2, flex: 5.5 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, flex: 5.5 }}>
         
         {/* Department Focus */}
         <Card sx={{ flex: 1, borderRadius: 0, borderTop: '6px solid var(--accent-orange)', display: 'flex', flexDirection: 'column' }}>

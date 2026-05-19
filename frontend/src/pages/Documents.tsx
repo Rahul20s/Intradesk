@@ -148,7 +148,7 @@ const Documents: React.FC = () => {
   };
 
   return (
-    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', pt: 2, px: 3 }}>
+    <Box sx={{ height: { xs: 'auto', md: 'calc(100vh - 100px)' }, display: 'flex', flexDirection: 'column', overflow: { xs: 'visible', md: 'hidden' }, pt: 2, px: { xs: 2, md: 3 } }}>
       
       {/* Header Box */}
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', flexShrink: 0 }}>

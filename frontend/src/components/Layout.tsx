@@ -182,7 +182,7 @@ const Layout: React.FC = () => {
               <MenuIcon />
             </IconButton>
             <Box component="img" src="/company-logo.png" sx={{ height: 32, mr: 1.5 }} alt="Logo" />
-            <Typography variant="h6" noWrap component="div" sx={{ color: colors.headerText, fontWeight: 500 }}>
+            <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' }, color: colors.headerText, fontWeight: 500 }}>
               CFM Asset Reconstruction Private Limited
             </Typography>
           </Box>

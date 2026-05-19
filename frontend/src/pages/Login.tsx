@@ -66,7 +66,7 @@ const Login: React.FC = () => {
           display: 'flex',
           width: '90%',
           maxWidth: 1000,
-          minHeight: 600,
+          minHeight: { xs: 'auto', md: 600 },
           borderRadius: 4,
           overflow: 'hidden',
           zIndex: 1,
