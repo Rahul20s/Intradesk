@@ -1,34 +1,56 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { 
-  Card, Typography, Box, Divider, Avatar, IconButton, LinearProgress, Grid
+  Card, Typography, Box, Divider, Avatar, IconButton, LinearProgress, Grid, Button
 } from '@mui/material';
 import { 
-  Description, Business, FileCopy, Help, Star
+  Description, Business, FileCopy, Star
 } from '@mui/icons-material';
 import api from '../services/api';
 
 const Dashboard: React.FC = () => {
-  const navigate = useNavigate();
 
   const [stats, setStats] = useState({ total: 0, policies: 0, sops: 0, templates: 0, faqs: 0 });
   const [recentDocs, setRecentDocs] = useState<any[]>([]);
+  const [importantLinks, setImportantLinks] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsRes, docsRes] = await Promise.all([
+        const [statsRes, docsRes, linksRes] = await Promise.all([
           api.get('/documents/stats/overview'),
-          api.get('/documents?limit=50')
+          api.get('/documents?limit=50'),
+          api.get('/documents/category/IMPORTANT_LINKS')
         ]);
         setStats(statsRes.data);
         setRecentDocs(docsRes.data.data || []);
+        setImportantLinks(linksRes.data.data || []);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
       }
     };
     fetchData();
   }, []);
+
+  const handleDownload = async (doc: any) => {
+    try {
+      const response = await api.get(`/documents/${doc.id}/download`, {
+        responseType: 'blob'
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', doc.fileName || 'document');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download document:', error);
+      alert('Failed to download document');
+    }
+  };
 
   const departmentStats = useMemo(() => {
     if (recentDocs.length === 0) return [];
@@ -159,16 +181,22 @@ const Dashboard: React.FC = () => {
           </Box>
         </Card>
 
-        {/* Favourite */}
+        {/* Important Links */}
         <Card sx={{ flex: 1, borderRadius: 0, borderTop: '6px solid var(--accent-pink)', display: 'flex', flexDirection: 'column' }}>
           <Box sx={{ backgroundColor: 'var(--accent-pink)', p: 1, textAlign: 'center', color: '#fff' }}>
-            <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}><Star sx={{ fontSize: 16, mr: 1 }} /> Favourite</Typography>
+            <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}><Star sx={{ fontSize: 16, mr: 1 }} /> Important Links</Typography>
           </Box>
-          <Box sx={{ p: 2, flex: 1, overflowY: 'auto' }}>
-            <Grid container spacing={2}>
-              <QuickAction icon={<Description sx={{ color: '#F48B29', fontSize: 24 }} />} label="Docs" onClick={() => navigate('/documents/default')} />
-              <QuickAction icon={<Help sx={{ color: '#7B3ED6', fontSize: 24 }} />} label="FAQs" onClick={() => navigate('/documents/faqs')} />
-            </Grid>
+          <Box sx={{ p: 0, flex: 1, overflowY: 'auto' }}>
+            {importantLinks.length > 0 ? importantLinks.map((link, i) => (
+              <Box key={i} sx={{ p: 1.5, borderBottom: '1px solid var(--card-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontWeight: 500, flex: 1, fontSize: '0.8rem' }}>{link.title}</Typography>
+                <Button size="small" variant="contained" onClick={() => handleDownload(link)} sx={{ background: 'var(--btn-action-bg)', minWidth: 'auto', p: '2px 8px', fontSize: '0.7rem' }}>
+                  Download
+                </Button>
+              </Box>
+            )) : (
+              <Typography variant="body2" sx={{ textAlign: 'center', color: 'var(--text-muted)', mt: 4 }}>No important links</Typography>
+            )}
           </Box>
         </Card>
 
@@ -204,13 +232,6 @@ const ListContent: React.FC<{ items: any[], emptyText: string, showAvatar: boole
   );
 };
 
-const QuickAction: React.FC<{ icon: React.ReactNode, label: string, onClick: () => void }> = ({ icon, label, onClick }) => (
-  <Grid item xs={6} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }} onClick={onClick}>
-    <IconButton sx={{ backgroundColor: '#f9f9f9', mb: 0.5, width: 40, height: 40 }}>
-      {icon}
-    </IconButton>
-    <Typography variant="caption" sx={{ color: 'var(--text-secondary)', fontSize: '0.7rem' }}>{label}</Typography>
-  </Grid>
-);
+
 
 export default Dashboard;

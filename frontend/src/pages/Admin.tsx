@@ -35,11 +35,13 @@ const CATEGORY_MAP: Record<string, string[]> = {
   'SOPs': ['LMS', 'General'],
   'Forms & Templates': ['General'],
   'FAQs': ['General'],
-  'Guidelines': ['General']
+  'Guidelines': ['General'],
+  'Important Links': ['General']
 };
 
 const toBackendCategory = (frontendCat: string) => {
   if (frontendCat === 'Forms & Templates') return 'TEMPLATES';
+  if (frontendCat === 'Important Links') return 'IMPORTANT_LINKS';
   return frontendCat.toUpperCase();
 };
 
@@ -51,6 +53,7 @@ const toFrontendCategory = (backendCat: string) => {
   if (upper === 'SOPS') return 'SOPs';
   if (upper === 'FAQS') return 'FAQs';
   if (upper === 'GUIDELINES') return 'Guidelines';
+  if (upper === 'IMPORTANT_LINKS') return 'Important Links';
   return backendCat;
 };
 

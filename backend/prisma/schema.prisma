@@ -56,4 +56,5 @@ enum Category {
   TEMPLATES
   FAQS
   GUIDELINES
+  IMPORTANT_LINKS
 }

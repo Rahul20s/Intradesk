@@ -37,7 +37,8 @@ const Layout: React.FC = () => {
   const userName = accounts.length > 0 && accounts[0].name ? accounts[0].name.split(' ')[0] : 'Admin';
   const isAdmin = () => accounts.length > 0 && 
     (accounts[0].username.toLowerCase() === 'rahul.sharma@cfmarc.in' ||
-     accounts[0].username.toLowerCase() === 'akash.yadav@cfmarc.in');
+     accounts[0].username.toLowerCase() === 'akash.yadav@cfmarc.in' ||
+     accounts[0].username.toLowerCase() === 'binduprasad.j@cfmarc.in');
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 

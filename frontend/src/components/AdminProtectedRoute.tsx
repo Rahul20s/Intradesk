@@ -12,7 +12,8 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
   // Check if user is admin
   const isAdmin = accounts.length > 0 && 
     (accounts[0].username.toLowerCase() === 'rahul.sharma@cfmarc.in' ||
-     accounts[0].username.toLowerCase() === 'akash.yadav@cfmarc.in');
+     accounts[0].username.toLowerCase() === 'akash.yadav@cfmarc.in' ||
+     accounts[0].username.toLowerCase() === 'binduprasad.j@cfmarc.in');
   
   if (!isAdmin) {
     return <Navigate to="/dashboard" replace />;
