@@ -64,7 +64,8 @@ const Admin: React.FC = () => {
     department: '',
     file: null as File | null,
     question: '',
-    answer: ''
+    answer: '',
+    url: ''
   });
   const [documents, setDocuments] = useState<Document[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -150,9 +151,11 @@ const Admin: React.FC = () => {
       if (formData.category === 'FAQs') {
         formDataToSend.append('question', formData.question);
         formDataToSend.append('answer', formData.answer);
+      } else if (formData.category === 'Important Links') {
+        formDataToSend.append('url', formData.url);
       }
       
-      if (formData.file) {
+      if (formData.file && formData.category !== 'FAQs' && formData.category !== 'Important Links') {
         formDataToSend.append('file', formData.file);
       }
 
@@ -162,7 +165,7 @@ const Admin: React.FC = () => {
 
       if (response.status === 200 || response.status === 201) {
         alert('Document uploaded successfully!');
-        setFormData({ title: '', category: '', department: '', file: null, question: '', answer: '' });
+        setFormData({ title: '', category: '', department: '', file: null, question: '', answer: '', url: '' });
         const res = await api.get('/documents?limit=100');
         setDocuments(res.data.data || []);
       } else {
@@ -290,6 +293,8 @@ const Admin: React.FC = () => {
                 <TextField fullWidth label="Question" value={formData.question} onChange={handleInputChange('question')} margin="normal" required multiline rows={3} size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
                 <TextField fullWidth label="Answer" value={formData.answer} onChange={handleInputChange('answer')} margin="normal" required multiline rows={4} size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
               </>
+            ) : formData.category === 'Important Links' ? (
+              <TextField fullWidth label="Direct Download URL (SharePoint/OneDrive)" value={formData.url} onChange={handleInputChange('url')} margin="normal" required size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
             ) : (
               <Box
                 onDragOver={handleDragOver}
@@ -317,11 +322,11 @@ const Admin: React.FC = () => {
               </Box>
             )}
 
-            {formData.category !== 'FAQs' && formData.file && (
+            {formData.category !== 'FAQs' && formData.category !== 'Important Links' && formData.file && (
                <Alert severity="info" sx={{ mb: 2, py: 0, '& .MuiAlert-message': { fontSize: '0.8rem' } }}>Selected: {formData.file.name}</Alert>
             )}
 
-            <Button type="submit" variant="contained" fullWidth disabled={uploading || !formData.title || !formData.category || !formData.department || (formData.category === 'FAQs' ? (!formData.question || !formData.answer) : !formData.file)} sx={{ background: 'var(--btn-primary-bg)', color: '#fff', mt: 2 }}>
+            <Button type="submit" variant="contained" fullWidth disabled={uploading || !formData.title || !formData.category || !formData.department || (formData.category === 'FAQs' ? (!formData.question || !formData.answer) : formData.category === 'Important Links' ? !formData.url : !formData.file)} sx={{ background: 'var(--btn-primary-bg)', color: '#fff', mt: 2 }}>
               {uploading ? 'Uploading...' : 'Upload Document'}
             </Button>
           </Box>

@@ -167,9 +167,10 @@ router.get('/category/:category', async (req, res) => {
 // Upload a new document
 router.post('/', upload.single('file'), async (req, res) => {
   try {
-    const { title, category, department, question, answer } = req.body;
+    const { title, category, department, question, answer, url } = req.body;
     const file = req.file;
     const isFAQ = category.toUpperCase() === 'FAQS';
+    const isImportantLink = category.toUpperCase() === 'IMPORTANT_LINKS';
 
     if (!title || !category || !department) {
       return res.status(400).json({ 
@@ -183,15 +184,27 @@ router.post('/', upload.single('file'), async (req, res) => {
       });
     }
 
-    if (!isFAQ && !file) {
+    if (isImportantLink && !url) {
+      return res.status(400).json({ 
+        error: 'Important Links require a URL' 
+      });
+    }
+
+    if (!isFAQ && !isImportantLink && !file) {
       return res.status(400).json({ 
         error: 'Non-FAQ documents require a file upload' 
       });
     }
 
     let filePath: string | null = null;
+    let fileName: string | null = null;
+    let fileSize: number | null = null;
+    let mimeType: string | null = null;
 
-    if (file) {
+    if (isImportantLink) {
+      filePath = url;
+      fileName = 'External Link';
+    } else if (file) {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       const blobName = file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname);
       const blockBlobClient = containerClient.getBlockBlobClient(blobName);
@@ -200,6 +213,9 @@ router.post('/', upload.single('file'), async (req, res) => {
         blobHTTPHeaders: { blobContentType: file.mimetype }
       });
       filePath = blobName;
+      fileName = file.originalname;
+      fileSize = file.size;
+      mimeType = file.mimetype;
     }
 
     const document = await prisma.document.create({
@@ -207,10 +223,10 @@ router.post('/', upload.single('file'), async (req, res) => {
         title,
         category: (category as string).toUpperCase() as Category,
         department,
-        fileName: file ? file.originalname : null,
+        fileName: fileName,
         filePath,
-        fileSize: file ? file.size : null,
-        mimeType: file ? file.mimetype : null,
+        fileSize: fileSize,
+        mimeType: mimeType,
         question: isFAQ ? question : null,
         answer: isFAQ ? answer : null
       }
@@ -307,7 +323,7 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    if (document.filePath) {
+    if (document.filePath && document.category !== 'IMPORTANT_LINKS') {
       const blockBlobClient = containerClient.getBlockBlobClient(document.filePath);
       await blockBlobClient.deleteIfExists();
     }

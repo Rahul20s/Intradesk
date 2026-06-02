@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
 import { 
-  Card, Typography, Box, Divider, Avatar, IconButton, LinearProgress, Grid, Button
+  Card, Typography, Box, Divider, Avatar, LinearProgress, Button
 } from '@mui/material';
 import { 
   Description, Business, FileCopy, Star
@@ -33,6 +33,18 @@ const Dashboard: React.FC = () => {
   }, []);
 
   const handleDownload = async (doc: any) => {
+    if (doc.category === 'IMPORTANT_LINKS') {
+      const url = doc.filePath;
+      // create a temporary link to trigger download behaviour
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
+    }
+
     try {
       const response = await api.get(`/documents/${doc.id}/download`, {
         responseType: 'blob'
