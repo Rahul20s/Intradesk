@@ -6,6 +6,7 @@ import './styles/global.css';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { InteractionStatus } from '@azure/msal-browser';
 import { CircularProgress, Box } from '@mui/material';
+import { Analytics } from '@vercel/analytics/react';
 
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -86,6 +87,7 @@ function App() {
           </Route>
         </Routes>
       </Router>
+      <Analytics />
     </ThemeProvider>
   );
 }
