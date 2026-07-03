@@ -5,7 +5,7 @@ import {
   TableContainer, TableHead, TableRow, Paper, Grid, Card, CardContent,
   Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Divider
 } from '@mui/material';
-import { Download, Description, LibraryBooks, Article, Help, MenuBook, Close, QuestionAnswer } from '@mui/icons-material';
+import { Download, Description, LibraryBooks, Article, Help, MenuBook, Close, QuestionAnswer, Visibility } from '@mui/icons-material';
 import api from '../services/api';
 
 interface Document {
@@ -120,6 +120,27 @@ const Documents: React.FC = () => {
     }
   };
 
+  const handleView = async (doc: any) => {
+    if (doc.category === 'IMPORTANT_LINKS') {
+      window.open(doc.filePath, '_blank');
+      return;
+    }
+    
+    try {
+      const response = await api.get(`/documents/${doc.id}/view`, { responseType: 'blob' });
+      const type = (response.headers['content-type'] as string) || 'application/pdf';
+      const blob = new Blob([response.data], { type });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      
+      // Cleanup the URL object after the new tab has had time to load it
+      setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+    } catch (error) {
+      console.error('Error viewing document:', error);
+      alert('Failed to view document');
+    }
+  };
+
   const getPageTitle = () => {
     let catTitle = '';
     if (!category || category === 'default') {
@@ -222,7 +243,7 @@ const Documents: React.FC = () => {
                   <TableCell sx={{ color: '#ffffff', fontWeight: 600, borderBottom: 'none' }}>Title</TableCell>
                   <TableCell sx={{ color: '#ffffff', fontWeight: 600, borderBottom: 'none' }}>Department</TableCell>
                   <TableCell sx={{ color: '#ffffff', fontWeight: 600, borderBottom: 'none' }}>Uploaded On</TableCell>
-                  <TableCell align="right" sx={{ color: '#ffffff', fontWeight: 600, borderBottom: 'none' }}>Action</TableCell>
+                  <TableCell align="center" sx={{ color: '#ffffff', fontWeight: 600, borderBottom: 'none' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -240,7 +261,14 @@ const Documents: React.FC = () => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ color: 'var(--text-secondary)', borderBottom: `1px solid var(--card-border)` }}>{formatDate(document.createdAt)}</TableCell>
-                    <TableCell align="right" sx={{ borderBottom: `1px solid var(--card-border)` }}>
+                    <TableCell align="center" sx={{ borderBottom: `1px solid var(--card-border)`, whiteSpace: 'nowrap' }}>
+                      <Button size="small" variant="outlined" startIcon={<Visibility />} onClick={() => handleView(document)}
+                        sx={{
+                          color: 'var(--accent-blue)', borderColor: 'var(--accent-blue)', mr: 1,
+                          '&:hover': { background: 'rgba(46, 108, 209, 0.05)', borderColor: 'var(--accent-blue)' }, boxShadow: 'none'
+                        }}>
+                        View
+                      </Button>
                       <Button size="small" variant="contained" startIcon={<Download />} onClick={() => handleDownload(document)}
                         sx={{
                           background: 'var(--btn-action-bg)', color: 'var(--btn-action-text)',
