@@ -5,7 +5,7 @@ import {
   TableContainer, TableHead, TableRow, Paper, Grid, Card, CardContent,
   Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Divider
 } from '@mui/material';
-import { Download, Description, LibraryBooks, Article, Help, MenuBook, Close, QuestionAnswer, Visibility } from '@mui/icons-material';
+import { Download, Description, LibraryBooks, Article, Help, MenuBook, Close, QuestionAnswer, Visibility, Campaign } from '@mui/icons-material';
 import api from '../services/api';
 
 interface Document {
@@ -43,6 +43,7 @@ const Documents: React.FC = () => {
       'templates': { icon: <Article />, color: 'amber', desc: 'Download document forms and templates' },
       'faqs': { icon: <Help />, color: 'red', desc: 'Find answers to frequently asked questions' },
       'guidelines': { icon: <MenuBook />, color: 'purple', desc: 'Review company guidelines and principles' },
+      'announcements': { icon: <Campaign />, color: 'cyan', desc: 'Read the latest company announcements' },
       'default': { icon: <Description />, color: 'teal', desc: 'Browse and download documents' }
     };
     return configs[cat?.toLowerCase() || 'default'] || configs.default;
@@ -150,6 +151,7 @@ const Documents: React.FC = () => {
       if (lowerCat === 'sops') catTitle = "SOPs";
       else if (lowerCat === 'faqs') catTitle = "FAQs";
       else if (lowerCat === 'templates') catTitle = 'Forms & Templates';
+      else if (lowerCat === 'announcements') catTitle = 'Announcements';
       else catTitle = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
     }
     
@@ -200,7 +202,7 @@ const Documents: React.FC = () => {
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" color="var(--text-secondary)">No documents found in this category.</Typography>
           </Box>
-        ) : category?.toUpperCase() === 'FAQS' ? (
+        ) : (category?.toUpperCase() === 'FAQS' || category?.toUpperCase() === 'ANNOUNCEMENTS') ? (
           <Grid container spacing={2}>
             {uniqueFilteredDocuments.map((document) => (
               <Grid item xs={12} md={6} lg={4} key={document.id}>
@@ -225,9 +227,9 @@ const Documents: React.FC = () => {
                   }}
                 >
                   <CardContent sx={{ p: 2, pb: '16px !important', display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                    <QuestionAnswer sx={{ color: '#212a34', mt: 0.5 }} />
+                    {category?.toUpperCase() === 'FAQS' ? <QuestionAnswer sx={{ color: '#212a34', mt: 0.5 }} /> : <Campaign sx={{ color: '#212a34', mt: 0.5 }} />}
                     <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.4 }}>
-                      {document.question}
+                      {document.title || document.question}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -297,9 +299,9 @@ const Documents: React.FC = () => {
           <>
             <DialogTitle sx={{ pb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
-                <Help sx={{ color: '#212a34', mt: 0.5 }} />
+                {category?.toUpperCase() === 'FAQS' ? <Help sx={{ color: '#212a34', mt: 0.5 }} /> : <Campaign sx={{ color: '#212a34', mt: 0.5 }} />}
                 <Typography variant="h6" sx={{ fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.3 }}>
-                  {selectedFaq.question}
+                  {selectedFaq.title || selectedFaq.question}
                 </Typography>
               </Box>
               <IconButton onClick={() => setSelectedFaq(null)} size="small" sx={{ ml: 2, mt: -0.5 }}>

@@ -70,7 +70,12 @@ const Layout: React.FC = () => {
       ]
     },
     { text: 'Forms & Templates', path: '/documents/templates' },
-    { text: 'Guidelines', path: '/documents/guidelines' },
+    { 
+      text: 'Guidelines', path: '/documents/guidelines',
+      children: [
+        { text: 'Announcements', path: '/documents/announcements' },
+      ]
+    },
     { text: 'FAQs', path: '/documents/faqs' },
     ...(isAdmin() ? [{ text: 'Admin Panel', path: '/admin' }] : []),
   ];

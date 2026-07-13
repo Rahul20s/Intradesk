@@ -4,7 +4,7 @@ import {
   Card, Typography, Box, Divider, Avatar, LinearProgress, Button
 } from '@mui/material';
 import { 
-  Description, Business, FileCopy, Star
+  Description, Business, FileCopy, Star, Campaign
 } from '@mui/icons-material';
 import api from '../services/api';
 
@@ -13,18 +13,21 @@ const Dashboard: React.FC = () => {
   const [stats, setStats] = useState({ total: 0, policies: 0, sops: 0, templates: 0, faqs: 0 });
   const [recentDocs, setRecentDocs] = useState<any[]>([]);
   const [importantLinks, setImportantLinks] = useState<any[]>([]);
+  const [announcements, setAnnouncements] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsRes, docsRes, linksRes] = await Promise.all([
+        const [statsRes, docsRes, linksRes, announcementsRes] = await Promise.all([
           api.get('/documents/stats/overview'),
           api.get('/documents?limit=50'),
-          api.get('/documents/category/IMPORTANT_LINKS')
+          api.get('/documents/category/IMPORTANT_LINKS'),
+          api.get('/documents/category/ANNOUNCEMENTS')
         ]);
         setStats(statsRes.data);
         setRecentDocs(docsRes.data.data || []);
         setImportantLinks(linksRes.data.data || []);
+        setAnnouncements(announcementsRes.data.data || []);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
       }
@@ -74,7 +77,7 @@ const Dashboard: React.FC = () => {
       .sort((a, b) => b.percent - a.percent).slice(0, 4);
   }, [recentDocs]);
 
-  const latestUpdates = recentDocs.slice(0, 4);
+  const latestAnnouncements = announcements.slice(0, 4);
   const recentDownloads = recentDocs.slice(4, 8); // Displaying recent from array
 
   return (
@@ -122,13 +125,13 @@ const Dashboard: React.FC = () => {
           </Card>
         </Box>
 
-        {/* Updates (25% width) */}
+        {/* Announcements (25% width) */}
         <Card sx={{ flex: 1, borderRadius: 0, display: 'flex', flexDirection: 'column' }}>
           <Box sx={{ backgroundColor: 'var(--accent-cyan)', p: 1, textAlign: 'center', color: '#fff' }}>
-            <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}><Description sx={{ fontSize: 16, mr: 1 }} /> Updates</Typography>
+            <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}><Campaign sx={{ fontSize: 16, mr: 1 }} /> Announcements</Typography>
           </Box>
           <Box sx={{ flex: 1, overflowY: 'auto' }}>
-            <ListContent items={latestUpdates} emptyText="No updates" showAvatar={true} />
+            <ListContent items={latestAnnouncements} emptyText="No announcements" showAvatar={true} />
           </Box>
         </Card>
       </Box>

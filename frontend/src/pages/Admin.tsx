@@ -14,8 +14,8 @@ import {
   Alert,
   Chip,
   IconButton
-} from '@mui/material';
-import { CloudUpload, Delete, Edit } from '@mui/icons-material';
+import { InputAdornment } from '@mui/material';
+import { CloudUpload, Delete, Edit, Search } from '@mui/icons-material';
 import api from '../services/api';
 
 interface Document {
@@ -36,7 +36,8 @@ const CATEGORY_MAP: Record<string, string[]> = {
   'Forms & Templates': ['General'],
   'FAQs': ['General'],
   'Guidelines': ['General'],
-  'Important Links': ['General']
+  'Important Links': ['General'],
+  'Announcements': ['General']
 };
 
 const toBackendCategory = (frontendCat: string) => {
@@ -54,6 +55,7 @@ const toFrontendCategory = (backendCat: string) => {
   if (upper === 'FAQS') return 'FAQs';
   if (upper === 'GUIDELINES') return 'Guidelines';
   if (upper === 'IMPORTANT_LINKS') return 'Important Links';
+  if (upper === 'ANNOUNCEMENTS') return 'Announcements';
   return backendCat;
 };
 
@@ -78,6 +80,7 @@ const Admin: React.FC = () => {
     question: '',
     answer: ''
   });
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleInputChange = (field: string) => (event: any) => {
     const value = event.target.value;
@@ -151,11 +154,13 @@ const Admin: React.FC = () => {
       if (formData.category === 'FAQs') {
         formDataToSend.append('question', formData.question);
         formDataToSend.append('answer', formData.answer);
+      } else if (formData.category === 'Announcements') {
+        formDataToSend.append('answer', formData.answer);
       } else if (formData.category === 'Important Links') {
         formDataToSend.append('url', formData.url);
       }
       
-      if (formData.file && formData.category !== 'FAQs' && formData.category !== 'Important Links') {
+      if (formData.file && formData.category !== 'FAQs' && formData.category !== 'Announcements' && formData.category !== 'Important Links') {
         formDataToSend.append('file', formData.file);
       }
 
@@ -251,6 +256,7 @@ const Admin: React.FC = () => {
 
   const availableSubmenus = formData.category ? CATEGORY_MAP[formData.category] || [] : [];
   const availableEditSubmenus = editFormData.category ? CATEGORY_MAP[editFormData.category] || [] : [];
+  const filteredDocuments = documents.filter(doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <Box sx={{ height: 'calc(100vh - 100px)', overflow: 'hidden', display: 'flex', gap: 3 }}>
@@ -293,6 +299,8 @@ const Admin: React.FC = () => {
                 <TextField fullWidth label="Question" value={formData.question} onChange={handleInputChange('question')} margin="normal" required multiline rows={3} size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
                 <TextField fullWidth label="Answer" value={formData.answer} onChange={handleInputChange('answer')} margin="normal" required multiline rows={4} size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
               </>
+            ) : formData.category === 'Announcements' ? (
+              <TextField fullWidth label="Content" value={formData.answer} onChange={handleInputChange('answer')} margin="normal" required multiline rows={6} size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
             ) : formData.category === 'Important Links' ? (
               <TextField fullWidth label="Direct Download URL (SharePoint/OneDrive)" value={formData.url} onChange={handleInputChange('url')} margin="normal" required size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
             ) : (
@@ -322,11 +330,11 @@ const Admin: React.FC = () => {
               </Box>
             )}
 
-            {formData.category !== 'FAQs' && formData.category !== 'Important Links' && formData.file && (
+            {formData.category !== 'FAQs' && formData.category !== 'Announcements' && formData.category !== 'Important Links' && formData.file && (
                <Alert severity="info" sx={{ mb: 2, py: 0, '& .MuiAlert-message': { fontSize: '0.8rem' } }}>Selected: {formData.file.name}</Alert>
             )}
 
-            <Button type="submit" variant="contained" fullWidth disabled={uploading || !formData.title || !formData.category || !formData.department || (formData.category === 'FAQs' ? (!formData.question || !formData.answer) : formData.category === 'Important Links' ? !formData.url : !formData.file)} sx={{ background: 'var(--btn-primary-bg)', color: '#fff', mt: 2 }}>
+            <Button type="submit" variant="contained" fullWidth disabled={uploading || !formData.title || !formData.category || !formData.department || (formData.category === 'FAQs' ? (!formData.question || !formData.answer) : formData.category === 'Announcements' ? !formData.answer : formData.category === 'Important Links' ? !formData.url : !formData.file)} sx={{ background: 'var(--btn-primary-bg)', color: '#fff', mt: 2 }}>
               {uploading ? 'Uploading...' : 'Upload Document'}
             </Button>
           </Box>
@@ -335,13 +343,23 @@ const Admin: React.FC = () => {
 
       {/* Documents List - Right Side (65%) */}
       <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column', borderRadius: 0, borderTop: '6px solid var(--accent-green)', height: '100%' }}>
-        <Box sx={{ p: 2, textAlign: 'center', borderBottom: '1px solid var(--card-border)', backgroundColor: '#fff' }}>
+        <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--card-border)', backgroundColor: '#fff' }}>
           <Typography variant="subtitle2" sx={{ color: 'var(--accent-green)', fontWeight: 600 }}>
             Existing Documents
           </Typography>
+          <TextField
+            placeholder="Search documents..."
+            size="small"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: <InputAdornment position="start"><Search fontSize="small" sx={{ color: 'var(--text-muted)' }} /></InputAdornment>,
+            }}
+            sx={{ width: 250, '& .MuiOutlinedInput-root': { borderRadius: 2, backgroundColor: 'var(--input-bg)' } }}
+          />
         </Box>
         <Box sx={{ flex: 1, overflowY: 'auto', p: 3, backgroundColor: 'var(--page-bg)' }}>
-          {documents.map((doc) => (
+          {filteredDocuments.map((doc) => (
             <Card key={doc.id} sx={{ mb: 2, border: '1px solid var(--card-border)', borderRadius: 1, boxShadow: 'none' }}>
               <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                 {editing === doc.id ? (
@@ -386,6 +404,10 @@ const Admin: React.FC = () => {
                           <Typography variant="body2" sx={{ mb: 0.5, fontSize: '0.8rem' }}><strong>Q:</strong> {doc.question}</Typography>
                           <Typography variant="body2" sx={{ fontSize: '0.8rem' }}><strong>A:</strong> {doc.answer}</Typography>
                         </Box>
+                      ) : doc.category === 'ANNOUNCEMENTS' && doc.answer ? (
+                        <Box sx={{ mb: 1, backgroundColor: '#f9f9f9', p: 1, borderRadius: 1 }}>
+                          <Typography variant="body2" sx={{ fontSize: '0.8rem', whiteSpace: 'pre-wrap' }}>{doc.answer}</Typography>
+                        </Box>
                       ) : (
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontSize: '0.8rem' }}>
                           {doc.fileName || 'No file attached'}
@@ -404,7 +426,7 @@ const Admin: React.FC = () => {
               </CardContent>
             </Card>
           ))}
-          {documents.length === 0 && (
+          {filteredDocuments.length === 0 && (
             <Typography variant="body2" sx={{ textAlign: 'center', color: 'var(--text-muted)', mt: 4 }}>No documents found</Typography>
           )}
         </Box>
