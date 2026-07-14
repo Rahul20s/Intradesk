@@ -171,6 +171,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     const file = req.file;
     const isFAQ = category.toUpperCase() === 'FAQS';
     const isImportantLink = category.toUpperCase() === 'IMPORTANT_LINKS';
+    const isAnnouncement = category.toUpperCase() === 'ANNOUNCEMENTS';
 
     if (!title || !category || !department) {
       return res.status(400).json({ 
@@ -190,9 +191,15 @@ router.post('/', upload.single('file'), async (req, res) => {
       });
     }
 
-    if (!isFAQ && !isImportantLink && !file) {
+    if (isAnnouncement && !answer) {
+      return res.status(400).json({
+        error: 'Announcements require content (answer field)'
+      });
+    }
+
+    if (!isFAQ && !isImportantLink && !isAnnouncement && !file) {
       return res.status(400).json({ 
-        error: 'Non-FAQ documents require a file upload' 
+        error: 'Standard documents require a file upload' 
       });
     }
 
@@ -228,7 +235,7 @@ router.post('/', upload.single('file'), async (req, res) => {
         fileSize: fileSize,
         mimeType: mimeType,
         question: isFAQ ? question : null,
-        answer: isFAQ ? answer : null
+        answer: (isFAQ || isAnnouncement) ? answer : null
       }
     });
 
