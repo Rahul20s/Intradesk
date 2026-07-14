@@ -13,8 +13,9 @@ import {
   Box,
   Alert,
   Chip,
-  IconButton
-import { InputAdornment } from '@mui/material';
+  IconButton,
+  InputAdornment
+} from '@mui/material';
 import { CloudUpload, Delete, Edit, Search } from '@mui/icons-material';
 import api from '../services/api';
 
