@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import {
   AppBar, Box, Toolbar, IconButton, Typography, Drawer, List, ListItem, ListItemButton,
@@ -11,6 +11,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useMsal } from '@azure/msal-react';
+import api from '../services/api';
+import CampaignIcon from '@mui/icons-material/Campaign';
 
 const drawerWidth = 235;
 
@@ -29,6 +31,21 @@ const colors = {
 const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+  const [latestAnnouncement, setLatestAnnouncement] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchAnnouncement = async () => {
+      try {
+        const response = await api.get('/documents/category/ANNOUNCEMENTS?limit=1');
+        if (response.data.data && response.data.data.length > 0) {
+          setLatestAnnouncement(response.data.data[0]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch latest announcement:', error);
+      }
+    };
+    fetchAnnouncement();
+  }, []);
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -208,8 +225,25 @@ const Layout: React.FC = () => {
           {drawer}
         </Drawer>
       </Box>
-      <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` }, backgroundColor: colors.pageBg, minHeight: '100vh' }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` }, backgroundColor: colors.pageBg, minHeight: '100vh', overflowX: 'hidden' }}>
         <Toolbar sx={{ minHeight: '64px !important' }} />
+        {latestAnnouncement && (
+          <Box sx={{ mt: -3, mx: -3, mb: 3, backgroundColor: '#d32f2f', color: '#fff', overflow: 'hidden', whiteSpace: 'nowrap', py: 0.5, display: 'flex', alignItems: 'center' }}>
+            <style>
+              {`
+                @keyframes marquee {
+                  0% { transform: translateX(0); }
+                  100% { transform: translateX(-100%); }
+                }
+              `}
+            </style>
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', animation: 'marquee 25s linear infinite', pl: '100%' }}>
+              <CampaignIcon sx={{ mr: 1, fontSize: 20 }} />
+              <Typography variant="body2" sx={{ fontWeight: 600, mr: 1 }}>{latestAnnouncement.title}:</Typography>
+              <Typography variant="body2">{latestAnnouncement.answer}</Typography>
+            </Box>
+          </Box>
+        )}
         <Outlet />
       </Box>
     </Box>
