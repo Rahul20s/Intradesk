@@ -18,6 +18,7 @@ interface Document {
   fileName?: string;
   question?: string;
   answer?: string;
+  filePath?: string;
 }
 
 const Documents: React.FC = () => {
