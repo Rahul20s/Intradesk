@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
 import { 
-  Card, Typography, Box, Divider, Avatar, LinearProgress, Button
+  Card, Typography, Box, Divider, Avatar, LinearProgress, Button, Dialog, DialogTitle, DialogContent, IconButton
 } from '@mui/material';
 import { 
-  Description, Business, FileCopy, Star, Campaign
+  Description, Business, FileCopy, Star, Campaign, Close as CloseIcon
 } from '@mui/icons-material';
 import api from '../services/api';
 
@@ -14,6 +14,7 @@ const Dashboard: React.FC = () => {
   const [recentDocs, setRecentDocs] = useState<any[]>([]);
   const [importantLinks, setImportantLinks] = useState<any[]>([]);
   const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,12 +127,18 @@ const Dashboard: React.FC = () => {
         </Box>
 
         {/* Announcements (25% width) */}
-        <Card sx={{ flex: 1, borderRadius: 0, display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ backgroundColor: 'var(--accent-cyan)', p: 1, textAlign: 'center', color: '#fff' }}>
-            <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}><Campaign sx={{ fontSize: 16, mr: 1 }} /> Announcements</Typography>
+        <Card sx={{ flex: 1, borderRadius: 0, borderTop: '6px solid #d32f2f', display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ p: 1, textAlign: 'center', borderBottom: '1px solid var(--card-border)' }}>
+            <Typography variant="subtitle2" sx={{ color: '#d32f2f', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 600 }}><Campaign sx={{ fontSize: 16, mr: 1 }} /> Announcements</Typography>
           </Box>
           <Box sx={{ flex: 1, overflowY: 'auto' }}>
-            <ListContent items={latestAnnouncements} emptyText="No announcements" showAvatar={true} />
+            <ListContent 
+              items={latestAnnouncements} 
+              emptyText="No announcements" 
+              showAvatar={true} 
+              hideDepartment={true}
+              onItemClick={(doc) => setSelectedAnnouncement(doc)}
+            />
           </Box>
         </Card>
       </Box>
@@ -217,19 +224,56 @@ const Dashboard: React.FC = () => {
 
       </Box>
 
+      {/* Announcement Modal Popup */}
+      <Dialog 
+        open={Boolean(selectedAnnouncement)} 
+        onClose={() => setSelectedAnnouncement(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ backgroundColor: '#f9f9f9', pb: 2, pt: 3, pr: 6 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+            {selectedAnnouncement?.title}
+          </Typography>
+          <IconButton 
+            onClick={() => setSelectedAnnouncement(null)}
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ p: 4, pt: '32px !important', minHeight: '100px' }}>
+          <Typography variant="body1" sx={{ color: 'var(--text-secondary)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+            {selectedAnnouncement?.answer}
+          </Typography>
+        </DialogContent>
+      </Dialog>
+
     </Box>
   );
 };
 
-const ListContent: React.FC<{ items: any[], emptyText: string, showAvatar: boolean }> = ({ items, emptyText, showAvatar }) => {
+const ListContent: React.FC<{ items: any[], emptyText: string, showAvatar: boolean, hideDepartment?: boolean, onItemClick?: (item: any) => void }> = ({ items, emptyText, showAvatar, hideDepartment, onItemClick }) => {
   if (items.length === 0) return <Typography variant="body2" sx={{ textAlign: 'center', color: 'var(--text-muted)', mt: 4 }}>{emptyText}</Typography>;
   
   return (
     <Box sx={{ p: 0 }}>
       {items.map((doc, i) => (
-        <Box key={i} sx={{ p: 1.5, borderBottom: '1px solid var(--card-border)', display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+        <Box 
+          key={i} 
+          onClick={() => onItemClick && onItemClick(doc)}
+          sx={{ 
+            p: 1.5, 
+            borderBottom: '1px solid var(--card-border)', 
+            display: 'flex', 
+            alignItems: 'flex-start', 
+            gap: 1.5,
+            cursor: onItemClick ? 'pointer' : 'default',
+            '&:hover': onItemClick ? { backgroundColor: 'rgba(0,0,0,0.02)' } : {}
+          }}
+        >
           {showAvatar ? (
-            <Avatar sx={{ bgcolor: 'var(--accent-orange)', width: 28, height: 28, fontSize: '0.8rem' }}>{doc.title.charAt(0)}</Avatar>
+            <Avatar sx={{ bgcolor: '#d32f2f', width: 28, height: 28, fontSize: '0.8rem' }}>{doc.title.charAt(0)}</Avatar>
           ) : (
             <Description sx={{ color: 'var(--accent-green)', mt: 0.5, fontSize: 18 }} />
           )}
@@ -238,7 +282,7 @@ const ListContent: React.FC<{ items: any[], emptyText: string, showAvatar: boole
               {doc.title}
             </Typography>
             <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
-              {doc.department} · {new Date(doc.createdAt).toLocaleDateString()}
+              {hideDepartment ? new Date(doc.createdAt).toLocaleDateString() : `${doc.department} · ${new Date(doc.createdAt).toLocaleDateString()}`}
             </Typography>
           </Box>
         </Box>
