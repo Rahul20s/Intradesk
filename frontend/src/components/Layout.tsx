@@ -237,7 +237,7 @@ const Layout: React.FC = () => {
                 }
               `}
             </style>
-            <Box sx={{ display: 'inline-flex', alignItems: 'center', animation: 'marquee 25s linear infinite', pl: '100%' }}>
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', animation: 'marquee 45s linear infinite', pl: '100%' }}>
               <CampaignIcon sx={{ mr: 1, fontSize: 20 }} />
               <Typography variant="body2" sx={{ fontWeight: 600, mr: 1 }}>{latestAnnouncement.title}:</Typography>
               <Typography variant="body2">{latestAnnouncement.answer}</Typography>
