@@ -246,7 +246,7 @@ const Dashboard: React.FC = () => {
         </DialogTitle>
         <DialogContent sx={{ p: 4, pt: '32px !important', minHeight: '100px' }}>
           {selectedAnnouncement?.answer && (
-            <Typography variant="body1" sx={{ color: 'var(--text-secondary)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+            <Typography variant="body1" sx={{ color: 'var(--text-secondary)', lineHeight: 1.6, whiteSpace: 'pre-wrap', textAlign: 'justify' }}>
               {selectedAnnouncement.answer}
             </Typography>
           )}
@@ -293,7 +293,7 @@ const ListContent: React.FC<{ items: any[], emptyText: string, showAvatar: boole
             <Description sx={{ color: 'var(--accent-green)', mt: 0.5, fontSize: 18 }} />
           )}
           <Box>
-            <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontWeight: 500, lineHeight: 1.2, mb: 0.5, fontSize: '0.8rem' }}>
+            <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontWeight: 500, lineHeight: 1.4, mb: 0.5, fontSize: '0.8rem', textAlign: 'justify' }}>
               {doc.title}
             </Typography>
             <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>

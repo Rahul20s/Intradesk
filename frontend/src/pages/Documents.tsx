@@ -312,7 +312,7 @@ const Documents: React.FC = () => {
             <Divider />
             <DialogContent sx={{ pt: 3, pb: 3, minHeight: 120 }}>
               {selectedFaq.answer && (
-                <Typography variant="body1" sx={{ lineHeight: 1.7, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
+                <Typography variant="body1" sx={{ lineHeight: 1.7, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', textAlign: 'justify' }}>
                   {selectedFaq.answer}
                 </Typography>
               )}
