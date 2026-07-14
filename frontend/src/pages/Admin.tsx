@@ -161,7 +161,7 @@ const Admin: React.FC = () => {
         formDataToSend.append('url', formData.url);
       }
       
-      if (formData.file && formData.category !== 'FAQs' && formData.category !== 'Announcements' && formData.category !== 'Important Links') {
+      if (formData.file && formData.category !== 'FAQs' && formData.category !== 'Important Links') {
         formDataToSend.append('file', formData.file);
       }
 
