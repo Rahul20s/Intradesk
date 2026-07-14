@@ -191,9 +191,9 @@ router.post('/', upload.single('file'), async (req, res) => {
       });
     }
 
-    if (isAnnouncement && !answer) {
+    if (isAnnouncement && !answer && !file) {
       return res.status(400).json({
-        error: 'Announcements require content (answer field)'
+        error: 'Announcements require either content or an image'
       });
     }
 

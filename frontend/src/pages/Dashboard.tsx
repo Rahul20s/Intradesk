@@ -243,9 +243,20 @@ const Dashboard: React.FC = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent sx={{ p: 4, pt: '32px !important', minHeight: '100px' }}>
-          <Typography variant="body1" sx={{ color: 'var(--text-secondary)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-            {selectedAnnouncement?.answer}
-          </Typography>
+          {selectedAnnouncement?.answer && (
+            <Typography variant="body1" sx={{ color: 'var(--text-secondary)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+              {selectedAnnouncement.answer}
+            </Typography>
+          )}
+          {selectedAnnouncement?.filePath && (
+            <Box sx={{ mt: selectedAnnouncement?.answer ? 2 : 0, textAlign: 'center' }}>
+              <img 
+                src={`${process.env.REACT_APP_API_BASE_URL || 'https://intradesk.cfmarc.in/api'}/documents/${selectedAnnouncement.id}/view`} 
+                alt="Announcement attachment" 
+                style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }} 
+              />
+            </Box>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -273,7 +284,9 @@ const ListContent: React.FC<{ items: any[], emptyText: string, showAvatar: boole
           }}
         >
           {showAvatar ? (
-            <Avatar sx={{ bgcolor: '#d32f2f', width: 28, height: 28, fontSize: '0.8rem' }}>{doc.title.charAt(0)}</Avatar>
+            <Avatar src={doc.category === 'ANNOUNCEMENTS' ? '/megaphone.png' : undefined} sx={{ bgcolor: doc.category === 'ANNOUNCEMENTS' ? 'transparent' : '#d32f2f', width: 32, height: 32, fontSize: '0.8rem', borderRadius: doc.category === 'ANNOUNCEMENTS' ? 0 : '50%' }}>
+              {doc.category === 'ANNOUNCEMENTS' ? '' : doc.title.charAt(0)}
+            </Avatar>
           ) : (
             <Description sx={{ color: 'var(--accent-green)', mt: 0.5, fontSize: 18 }} />
           )}

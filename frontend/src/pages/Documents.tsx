@@ -227,7 +227,7 @@ const Documents: React.FC = () => {
                   }}
                 >
                   <CardContent sx={{ p: 2, pb: '16px !important', display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                    {category?.toUpperCase() === 'FAQS' ? <QuestionAnswer sx={{ color: '#212a34', mt: 0.5 }} /> : <Campaign sx={{ color: '#212a34', mt: 0.5 }} />}
+                    {category?.toUpperCase() === 'FAQS' ? <QuestionAnswer sx={{ color: '#212a34', mt: 0.5 }} /> : <img src="/megaphone.png" alt="Megaphone" style={{ width: 24, height: 24, marginTop: 4 }} />}
                     <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.4 }}>
                       {document.title || document.question}
                     </Typography>
@@ -299,7 +299,7 @@ const Documents: React.FC = () => {
           <>
             <DialogTitle sx={{ pb: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
-                {category?.toUpperCase() === 'FAQS' ? <Help sx={{ color: '#212a34', mt: 0.5 }} /> : <Campaign sx={{ color: '#212a34', mt: 0.5 }} />}
+                {category?.toUpperCase() === 'FAQS' ? <Help sx={{ color: '#212a34', mt: 0.5 }} /> : <img src="/megaphone.png" alt="Megaphone" style={{ width: 24, height: 24, marginTop: 4 }} />}
                 <Typography variant="h6" sx={{ fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.3 }}>
                   {selectedFaq.title || selectedFaq.question}
                 </Typography>
@@ -310,9 +310,20 @@ const Documents: React.FC = () => {
             </DialogTitle>
             <Divider />
             <DialogContent sx={{ pt: 3, pb: 3, minHeight: 120 }}>
-              <Typography variant="body1" sx={{ lineHeight: 1.7, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
-                {selectedFaq.answer}
-              </Typography>
+              {selectedFaq.answer && (
+                <Typography variant="body1" sx={{ lineHeight: 1.7, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
+                  {selectedFaq.answer}
+                </Typography>
+              )}
+              {selectedFaq.filePath && (
+                <Box sx={{ mt: selectedFaq.answer ? 2 : 0, textAlign: 'center' }}>
+                  <img 
+                    src={`${process.env.REACT_APP_API_BASE_URL || 'https://intradesk.cfmarc.in/api'}/documents/${selectedFaq.id}/view`} 
+                    alt="Attachment" 
+                    style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }} 
+                  />
+                </Box>
+              )}
             </DialogContent>
             <DialogActions sx={{ p: 2, pt: 0 }}>
               <Button onClick={() => setSelectedFaq(null)} variant="outlined" sx={{ color: '#212a34', borderColor: '#212a34' }}>

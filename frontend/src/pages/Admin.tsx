@@ -301,10 +301,12 @@ const Admin: React.FC = () => {
                 <TextField fullWidth label="Answer" value={formData.answer} onChange={handleInputChange('answer')} margin="normal" required multiline rows={4} size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
               </>
             ) : formData.category === 'Announcements' ? (
-              <TextField fullWidth label="Content" value={formData.answer} onChange={handleInputChange('answer')} margin="normal" required multiline rows={6} size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
+              <TextField fullWidth label="Content (Optional if image provided)" value={formData.answer} onChange={handleInputChange('answer')} margin="normal" multiline rows={6} size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
             ) : formData.category === 'Important Links' ? (
               <TextField fullWidth label="Direct Download URL (SharePoint/OneDrive)" value={formData.url} onChange={handleInputChange('url')} margin="normal" required size="small" sx={{ mb: 2, backgroundColor: 'var(--input-bg)' }} />
-            ) : (
+            ) : null}
+
+            {formData.category !== 'FAQs' && formData.category !== 'Important Links' && (
               <Box
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -327,15 +329,15 @@ const Admin: React.FC = () => {
                 <Typography variant="caption" sx={{ color: 'var(--text-muted)' }}>
                   or click to browse
                 </Typography>
-                <input type="file" hidden onChange={handleFileChange} accept=".pdf,.doc,.docx,.xls,.xlsx" />
+                <input type="file" hidden onChange={handleFileChange} accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp" />
               </Box>
             )}
 
-            {formData.category !== 'FAQs' && formData.category !== 'Announcements' && formData.category !== 'Important Links' && formData.file && (
+            {formData.file && formData.category !== 'FAQs' && formData.category !== 'Important Links' && (
                <Alert severity="info" sx={{ mb: 2, py: 0, '& .MuiAlert-message': { fontSize: '0.8rem' } }}>Selected: {formData.file.name}</Alert>
             )}
 
-            <Button type="submit" variant="contained" fullWidth disabled={uploading || !formData.title || !formData.category || !formData.department || (formData.category === 'FAQs' ? (!formData.question || !formData.answer) : formData.category === 'Announcements' ? !formData.answer : formData.category === 'Important Links' ? !formData.url : !formData.file)} sx={{ background: 'var(--btn-primary-bg)', color: '#fff', mt: 2 }}>
+            <Button type="submit" variant="contained" fullWidth disabled={uploading || !formData.title || !formData.category || !formData.department || (formData.category === 'FAQs' ? (!formData.question || !formData.answer) : formData.category === 'Announcements' ? (!formData.answer && !formData.file) : formData.category === 'Important Links' ? !formData.url : !formData.file)} sx={{ background: 'var(--btn-primary-bg)', color: '#fff', mt: 2 }}>
               {uploading ? 'Uploading...' : 'Upload Document'}
             </Button>
           </Box>
