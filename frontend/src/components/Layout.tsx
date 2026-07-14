@@ -31,14 +31,14 @@ const colors = {
 const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
-  const [latestAnnouncement, setLatestAnnouncement] = useState<any>(null);
+  const [announcements, setAnnouncements] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchAnnouncement = async () => {
       try {
-        const response = await api.get('/documents/category/ANNOUNCEMENTS?limit=1');
-        if (response.data.data && response.data.data.length > 0) {
-          setLatestAnnouncement(response.data.data[0]);
+        const response = await api.get('/documents/category/ANNOUNCEMENTS?limit=10');
+        if (response.data.data) {
+          setAnnouncements(response.data.data);
         }
       } catch (error) {
         console.error('Failed to fetch latest announcement:', error);
@@ -227,7 +227,7 @@ const Layout: React.FC = () => {
       </Box>
       <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` }, backgroundColor: colors.pageBg, minHeight: '100vh', overflowX: 'hidden' }}>
         <Toolbar sx={{ minHeight: '64px !important' }} />
-        {latestAnnouncement && (
+        {announcements.length > 0 && (
           <Box sx={{ mt: -3, mx: -3, mb: 3, backgroundColor: '#d32f2f', color: '#fff', overflow: 'hidden', whiteSpace: 'nowrap', py: 0.5, display: 'flex', alignItems: 'center' }}>
             <style>
               {`
@@ -237,10 +237,16 @@ const Layout: React.FC = () => {
                 }
               `}
             </style>
-            <Box sx={{ display: 'inline-flex', alignItems: 'center', animation: 'marquee 45s linear infinite', pl: '100%' }}>
-              <CampaignIcon sx={{ mr: 1, fontSize: 20 }} />
-              <Typography variant="body2" sx={{ fontWeight: 600, mr: 1 }}>{latestAnnouncement.title}:</Typography>
-              <Typography variant="body2">{latestAnnouncement.answer}</Typography>
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', animation: 'marquee 80s linear infinite', pl: '100%' }}>
+              {announcements.map((ann, idx) => (
+                <React.Fragment key={ann.id || idx}>
+                  <CampaignIcon sx={{ mr: 1, ml: idx === 0 ? 0 : 3, fontSize: 20 }} />
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{ann.title}</Typography>
+                  {idx < announcements.length - 1 && (
+                    <Typography variant="body2" sx={{ mx: 4, opacity: 0.6 }}>•</Typography>
+                  )}
+                </React.Fragment>
+              ))}
             </Box>
           </Box>
         )}
