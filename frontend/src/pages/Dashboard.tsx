@@ -129,7 +129,9 @@ const Dashboard: React.FC = () => {
         {/* Announcements (25% width) */}
         <Card sx={{ flex: 1, borderRadius: 0, borderTop: '6px solid #d32f2f', display: 'flex', flexDirection: 'column' }}>
           <Box sx={{ p: 1, textAlign: 'center', borderBottom: '1px solid var(--card-border)' }}>
-            <Typography variant="subtitle2" sx={{ color: '#d32f2f', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 600 }}><Campaign sx={{ fontSize: 16, mr: 1 }} /> Announcements</Typography>
+            <Typography variant="subtitle2" sx={{ color: '#d32f2f', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 600 }}>
+              <img src="/megaphone.png" alt="Megaphone" style={{ width: 18, height: 18, marginRight: 8 }} /> Announcements
+            </Typography>
           </Box>
           <Box sx={{ flex: 1, overflowY: 'auto' }}>
             <ListContent 
@@ -284,8 +286,8 @@ const ListContent: React.FC<{ items: any[], emptyText: string, showAvatar: boole
           }}
         >
           {showAvatar ? (
-            <Avatar src={doc.category === 'ANNOUNCEMENTS' ? '/megaphone.png' : undefined} sx={{ bgcolor: doc.category === 'ANNOUNCEMENTS' ? 'transparent' : '#d32f2f', width: 32, height: 32, fontSize: '0.8rem', borderRadius: doc.category === 'ANNOUNCEMENTS' ? 0 : '50%' }}>
-              {doc.category === 'ANNOUNCEMENTS' ? '' : doc.title.charAt(0)}
+            <Avatar sx={{ bgcolor: '#d32f2f', width: 32, height: 32, fontSize: '0.9rem' }}>
+              {doc.title.charAt(0).toUpperCase()}
             </Avatar>
           ) : (
             <Description sx={{ color: 'var(--accent-green)', mt: 0.5, fontSize: 18 }} />
