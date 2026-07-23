@@ -215,7 +215,7 @@ const Dashboard: React.FC = () => {
               <Box key={i} sx={{ p: 1.5, borderBottom: '1px solid var(--card-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2" sx={{ color: 'var(--text-secondary)', fontWeight: 500, flex: 1, fontSize: '0.8rem' }}>{link.title}</Typography>
                 <Button size="small" variant="contained" onClick={() => handleDownload(link)} sx={{ backgroundColor: 'var(--accent-pink)', color: '#fff', '&:hover': { backgroundColor: '#d12e84' }, minWidth: 'auto', p: '2px 8px', fontSize: '0.7rem', boxShadow: 'none' }}>
-                  Download
+                  VIEW
                 </Button>
               </Box>
             )) : (
